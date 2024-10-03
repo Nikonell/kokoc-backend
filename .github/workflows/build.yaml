@@ -1,0 +1,24 @@
+name: Application build 
+run-name: building application
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🔨 Start builing the docker image"
+      - name: Check out repository code
+        uses: actions/checkout@v4.2.0
+      - run: echo "💡 The repository has been cloned to the runner."
+      - name: Docker Login
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.DOCKER_PUBLISHER_LOGIN }}
+          password: ${{ secrets.DOCKER_PUBLISHER_PASSWORD }}
+      - name: Docker Setup Buildx
+        uses: docker/build-push-action@v6.9.0
+      - run: docker buildx build -t ${{ vars.SCD_APP }}:latest .
+      - run: docker push ${{ vars.SCD_APP }}:latest
