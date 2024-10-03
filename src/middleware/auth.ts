@@ -17,6 +17,12 @@ export const authMiddleware = new Elysia()
                         maxAge: 60 * 60 * 24 * 30,
                     });
                 },
+                async logout() {
+                    auth.set({
+                        value: "",
+                        maxAge: 0,
+                    });
+                },
                 async id() {
                     const session = await jwt.verify(auth.value);
                     if (!session) throw new UnauthorizedError();

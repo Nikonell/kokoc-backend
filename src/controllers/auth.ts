@@ -40,6 +40,20 @@ const authController = new Elysia({ prefix: "/auth" })
             description: "Register new user",
             tags: ["Auth"]
         }
+    })
+    .post("/logout", async ({ set, auth }) => {
+        await auth.logout();
+
+        return successResponse(set, null);
+    }, {
+        response: {
+            200: successResponseType(authResponse)
+        },
+        detail: {
+            summary: "Logout",
+            description: "Logout current user",
+            tags: ["Auth"]
+        }
     });
 
 export default authController;
