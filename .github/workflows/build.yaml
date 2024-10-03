@@ -23,6 +23,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6.9.0
         with:
-          tags: kuzgoga/kokoc_backend:${{ github.sha }}
+          tags: kuzgoga/kokoc_backend:latest
           platforms: linux/amd64
           push: true
