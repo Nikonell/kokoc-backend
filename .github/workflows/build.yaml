@@ -20,5 +20,5 @@ jobs:
           password: ${{ secrets.DOCKER_PUBLISHER_PASSWORD }}
       - name: Docker Setup Buildx
         uses: docker/build-push-action@v6.9.0
-      - run: docker buildx build -t ${{ vars.SCD_APP }}:latest .
-      - run: docker push ${{ vars.SCD_APP }}:latest
+      - run: docker buildx build -t kokoc_backend:latest .
+      - run: docker push kokoc_backend:latest
