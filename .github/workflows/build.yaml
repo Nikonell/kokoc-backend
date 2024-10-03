@@ -20,14 +20,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_PUBLISHER_LOGIN }}
           password: ${{ secrets.DOCKER_PUBLISHER_PASSWORD }}
-      - name: Retrieve git commit id
-        run: |
-          echo "TAG_NAME=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-        id: commit_id
-
       - name: Build and push
         uses: docker/build-push-action@v6.9.0
         with:
-          tags: kuzgoga/kokoc_backend:${{ steps.version.outputs.commit_id }}
+          tags: kuzgoga/kokoc_backend:${{ github.sha }}
           platforms: linux/amd64
           push: true
