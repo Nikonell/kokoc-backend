@@ -35,6 +35,7 @@ export abstract class CommentService {
     static async get_filtered(filters: CommentFilters): Promise<SelectComment[]> {
         const comments = await prisma.comment.findMany({
             where: filters,
+            orderBy: { createdAt: "desc" },
             include: {
                 author: true,
                 column: true

@@ -35,35 +35,43 @@ export abstract class ColumnService {
     static async get_filtered(filters: ColumnFilters, userId?: number): Promise<SelectColumn[]> {
         const { page, limit, text, category } = filters;
 
+        const whereClause = this.buildWhereClause(text, category);
+
         const columns = await prisma.column.findMany({
             skip: page * limit,
             take: limit,
-            where: {
-                AND: [
-                    {
-                        OR: [
-                            { title: { contains: text, mode: 'insensitive' } },
-                            { content: { contains: text, mode: 'insensitive' } }
-                        ]
-                    },
-                    category?.length ? { category: { in: category } } : {}
-                ]
-            },
-            include: { comments: true }
+            where: whereClause,
+            orderBy: { createdAt: "desc" },
+            include: {
+                comments: {
+                    orderBy: { createdAt: "desc" }
+                }
+            }
         });
 
         return columns.map(column => this.mapColumn(column, userId));
     }
 
     static async count_filtered(filters: ColumnFilters): Promise<number> {
-        return await prisma.column.count({
-            where: {
-                OR: [
-                    { title: { contains: filters.text, mode: "insensitive" } },
-                    { content: { contains: filters.text, mode: "insensitive" } }
-                ]
-            }
-        });
+        const { text, category } = filters;
+
+        const whereClause = this.buildWhereClause(text, category);
+
+        return await prisma.column.count({ where: whereClause });
+    }
+
+    private static buildWhereClause(text?: string, category?: string[]): any {
+        return {
+            AND: [
+                text ? {
+                    OR: [
+                        { title: { contains: text, mode: 'insensitive' } },
+                        { content: { contains: text, mode: 'insensitive' } }
+                    ]
+                } : {},
+                category?.length ? { category: { in: category } } : {}
+            ]
+        };
     }
 
     static async create(column: InsertColumn, userId: number): Promise<SelectColumn> {
