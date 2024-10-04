@@ -13,8 +13,6 @@ RUN cd /temp/dev && bun install --frozen-lockfile
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
-COPY startup.sh startup.sh
-RUN ["chmod", "+x", "./startup.sh"]
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # copy node_modules from temp directory
@@ -34,9 +32,11 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /app/src ./src
 COPY --from=prerelease /app/prisma ./prisma
 COPY --from=prerelease /app/package.json .
+COPY startup.sh /app/startup.sh
 
+RUN ["chmod", "+x", "/app/startup.sh"]
 RUN bunx prisma generate
 
 USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT ["./startup.sh"]
+ENTRYPOINT ["/app/startup.sh"]
