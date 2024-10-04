@@ -2,7 +2,7 @@ import { NotFoundError } from "elysia";
 import prisma from "../utils/prisma";
 import { UserService } from "./user";
 import { OperationError } from "../utils/errors";
-import { BasicColumn, MappedColumn } from "../models/column/basic";
+import { BasicColumn, columnCategory, MappedColumn } from "../models/column/basic";
 import { ColumnFilters, InsertColumn, MortalUpdateColumn, UpdateColumn } from "../models/column/utils";
 import { SelectColumn } from "../models/column/extended";
 
@@ -33,13 +33,20 @@ export abstract class ColumnService {
     }
 
     static async get_filtered(filters: ColumnFilters, userId?: number): Promise<SelectColumn[]> {
+        const { page, limit, text, category } = filters;
+
         const columns = await prisma.column.findMany({
-            skip: filters.page * filters.limit,
-            take: filters.limit,
+            skip: page * limit,
+            take: limit,
             where: {
-                OR: [
-                    { title: { contains: filters.text, mode: "insensitive" } },
-                    { content: { contains: filters.text, mode: "insensitive" } }
+                AND: [
+                    {
+                        OR: [
+                            { title: { contains: text, mode: 'insensitive' } },
+                            { content: { contains: text, mode: 'insensitive' } }
+                        ]
+                    },
+                    category?.length ? { category: { in: category } } : {}
                 ]
             },
             include: { comments: true }
