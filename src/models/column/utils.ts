@@ -19,3 +19,8 @@ export const updateColumn = t.Mapped(
 );
 
 export type UpdateColumn = typeof updateColumn.static;
+
+export const mortalUpdateColumn = t.Pick(
+    updateColumn,
+    ["likes", "dislikes"]
+)

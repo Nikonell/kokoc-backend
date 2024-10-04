@@ -4,6 +4,7 @@ import { columnFilters, insertColumn, updateColumn } from "../models/column/util
 import { errorResponseType, paginatedResponse, paginatedResponseType, successResponse, successResponseType } from "../utils/responses";
 import { extendedColumn } from "../models/column/extended";
 import { authMiddleware } from "../middleware/auth";
+import { OperationError } from "../utils/errors";
 
 const columnController = new Elysia({ prefix: "/columns" })
     .use(authMiddleware)
@@ -103,6 +104,25 @@ const columnController = new Elysia({ prefix: "/columns" })
             summary: "Delete",
             description: "Delete a column",
             tags: ["Columns"]
+        }
+    })
+    .post("/:id/like", async ({ set, params, auth }) => {
+        const userId = await auth.id();
+        const column = await ColumnService.get_unmapped(params.id, userId);
+
+        if (column.likes.includes(userId)) throw new OperationError("Already liked", 409);
+        const mapped = await ColumnService
+
+        return successResponse(set, null);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            200: successResponseType(t.Null()),
+            401: errorResponseType(401, "Unauthorized"),
+            404: errorResponseType(404, "Column not found"),
+            409: errorResponseType(409, "Already liked")
         }
     });
 
