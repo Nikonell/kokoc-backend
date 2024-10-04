@@ -75,7 +75,8 @@ export abstract class ColumnService {
         const user = await UserService.get_slim(userId);
         if (!user.isAdmin) throw new OperationError("Only administrators can delete columns", 403);
 
-        await prisma.column.delete({ where: { id } });
+        const column = await prisma.column.delete({ where: { id } });
+        if (!column.id) throw new NotFoundError("Column not found");
     }
 
     private static mapColumn(column: any, userId?: number): SelectColumn {

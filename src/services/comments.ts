@@ -44,6 +44,12 @@ export abstract class CommentService {
         return comments;
     }
 
+    static async count_filtered(filters: CommentFilters): Promise<number> {
+        return await prisma.comment.count({
+            where: filters
+        });
+    }
+
     static async create(comment: InsertComment): Promise<SelectComment> {
         const newComment = await prisma.comment.create({
             data: comment,
