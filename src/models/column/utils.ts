@@ -2,7 +2,7 @@ import { t } from "elysia";
 import { basicColumn } from "./basic";
 
 // Insert
-export const insertColumn = t.Omit(basicColumn, ["id", "created_at", "likes", "dislikes"])
+export const insertColumn = t.Omit(basicColumn, ["id", "createdAt", "likes", "dislikes"])
 export type InsertColumn = typeof insertColumn.static;
 
 // Filters
