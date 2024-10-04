@@ -1,3 +1,3 @@
 #!/bin/bash
 bunx prisma migrate deploy
-bun run ./server.ts
+bun run /app/server.ts
