@@ -7,6 +7,7 @@ import { errorsDefinition } from "./utils/errors";
 import authController from "./controllers/auth";
 import userController from "./controllers/user";
 import columnController from "./controllers/column";
+import prisma from "./utils/prisma";
 
 const logger = Logestic.preset("fancy");
 
@@ -55,6 +56,10 @@ const app = new Elysia({ prefix: "/api" })
     })
     .use(authController)
     .use(userController)
+    .get("/healthcheck", async () => {
+        await prisma.$executeRaw`SELECT PG_SLEEP(0);`;
+        return { status: "success" };
+    })
     .listen(3000, ({ hostname, port }) => {
         console.log(`🦊 Elysia is running at ${hostname}:${port}`);
     });
