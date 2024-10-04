@@ -35,6 +35,7 @@ COPY --from=prerelease /app/prisma ./prisma
 COPY startup.sh /app/startup.sh
 
 RUN ["chmod", "+x", "/app/startup.sh"]
+RUN bunx prisma generate
 
 USER bun
 EXPOSE 3000/tcp
