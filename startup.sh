@@ -1,3 +1,3 @@
 #!/bin/bash
-bun prisma migrate deploy
+bunx prisma migrate deploy
 bun run ./src/index.ts
