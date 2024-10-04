@@ -11,10 +11,11 @@ export const basicColumn = t.Object({
     createdAt: t.Date(),
     category: columnCategory,
     title: t.String({ minLength: 1, maxLength: 256 }),
+    summary: t.String({ minLength: 1, maxLength: 512 }),
     content: t.String({ minLength: 1, maxLength: 8192 }),
     likes: t.Array(t.Number({ minimum: 1 })),
     dislikes: t.Array(t.Number({ minimum: 1 })),
-})
+});
 export type BasicColumn = typeof basicColumn.static;
 
 // Mapped

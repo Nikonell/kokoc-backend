@@ -66,7 +66,8 @@ export abstract class ColumnService {
                 text ? {
                     OR: [
                         { title: { contains: text, mode: 'insensitive' } },
-                        { content: { contains: text, mode: 'insensitive' } }
+                        { content: { contains: text, mode: 'insensitive' } },
+                        { summary: { contains: text, mode: 'insensitive' } }
                     ]
                 } : {},
                 category?.length ? { category: { in: category } } : {}

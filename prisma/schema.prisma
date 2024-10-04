@@ -30,6 +30,7 @@ model Column {
   createdAt DateTime       @default(now())
   category  ColumnCategory
   title     String
+  summary   String
   content   String
   likes     Int[]         @default([])
   dislikes  Int[]         @default([])
