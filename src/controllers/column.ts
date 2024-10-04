@@ -1,5 +1,5 @@
 import Elysia, { StatusMap, t } from "elysia";
-import { ColumnService } from "../services/columns";
+import { ColumnService } from "../services/column";
 import { columnFilters, insertColumn, updateColumn } from "../models/column/utils";
 import { errorResponseType, paginatedResponse, paginatedResponseType, successResponse, successResponseType } from "../utils/responses";
 import { extendedColumn } from "../models/column/extended";
@@ -82,6 +82,11 @@ const columnController = new Elysia({ prefix: "/columns" })
             401: errorResponseType(401, "Unauthorized"),
             403: errorResponseType(403, "Only administrators can update columns"),
             404: errorResponseType(404, "Column not found")
+        },
+        detail: {
+            summary: "Update",
+            description: "Update a column",
+            tags: ["Columns"]
         }
     })
     .delete("/:id", async ({ set, auth, params }) => {
@@ -94,7 +99,7 @@ const columnController = new Elysia({ prefix: "/columns" })
         params: t.Object({
             id: t.Number()
         }),
-        response:{
+        response: {
             200: successResponseType(t.Null()),
             401: errorResponseType(401, "Unauthorized"),
             403: errorResponseType(403, "Only administrators can delete columns"),
@@ -108,10 +113,12 @@ const columnController = new Elysia({ prefix: "/columns" })
     })
     .post("/:id/like", async ({ set, params, auth }) => {
         const userId = await auth.id();
-        const column = await ColumnService.get_unmapped(params.id, userId);
+        const column = await ColumnService.get_unmapped(params.id);
 
         if (column.likes.includes(userId)) throw new OperationError("Already liked", 409);
-        const mapped = await ColumnService
+        await ColumnService.update_mortal(params.id, {
+            likes: [...column.likes, userId]
+        });
 
         return successResponse(set, null);
     }, {
@@ -123,6 +130,89 @@ const columnController = new Elysia({ prefix: "/columns" })
             401: errorResponseType(401, "Unauthorized"),
             404: errorResponseType(404, "Column not found"),
             409: errorResponseType(409, "Already liked")
+        },
+        detail: {
+            summary: "Like",
+            description: "Like a column",
+            tags: ["Columns"]
+        }
+    })
+    .delete("/:id/like", async ({ set, params, auth }) => {
+        const userId = await auth.id();
+        const column = await ColumnService.get_unmapped(params.id);
+
+        if (!column.likes.includes(userId)) throw new OperationError("Not liked", 409);
+        await ColumnService.update_mortal(params.id, {
+            likes: column.likes.filter(id => id !== userId)
+        });
+
+        return successResponse(set, null);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            200: successResponseType(t.Null()),
+            401: errorResponseType(401, "Unauthorized"),
+            404: errorResponseType(404, "Column not found"),
+            409: errorResponseType(409, "Not liked")
+        },
+        detail: {
+            summary: "Unlike",
+            description: "Unlike a column",
+            tags: ["Columns"]
+        }
+    })
+    .post("/:id/dislike", async ({ set, params, body, auth }) => {
+        const userId = await auth.id();
+        const column = await ColumnService.get_unmapped(params.id);
+
+        if (column.dislikes.includes(userId)) throw new OperationError("Already disliked", 409);
+        await ColumnService.update_mortal(params.id, {
+            dislikes: [...column.dislikes, userId]
+        });
+
+        return successResponse(set, null);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            200: successResponseType(t.Null()),
+            401: errorResponseType(401, "Unauthorized"),
+            404: errorResponseType(404, "Column not found"),
+            409: errorResponseType(409, "Already disliked")
+        },
+        detail: {
+            summary: "Dislike",
+            description: "Dislike a column",
+            tags: ["Columns"]
+        }
+    })
+    .delete("/:id/dislike", async ({ set, params, auth }) => {
+        const userId = await auth.id();
+        const column = await ColumnService.get_unmapped(params.id);
+
+        if (!column.dislikes.includes(userId)) throw new OperationError("Not disliked", 409);
+        await ColumnService.update_mortal(params.id, {
+            dislikes: column.dislikes.filter(id => id !== userId)
+        });
+
+        return successResponse(set, null);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            200: successResponseType(t.Null()),
+            401: errorResponseType(401, "Unauthorized"),
+            404: errorResponseType(404, "Column not found"),
+            409: errorResponseType(409, "Not disliked")
+        },
+        detail: {
+            summary: "Undislike",
+            description: "Undislike a column",
+            tags: ["Columns"]
         }
     });
 

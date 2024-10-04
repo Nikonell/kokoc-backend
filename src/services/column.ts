@@ -3,7 +3,7 @@ import prisma from "../utils/prisma";
 import { UserService } from "./user";
 import { OperationError } from "../utils/errors";
 import { BasicColumn, MappedColumn } from "../models/column/basic";
-import { ColumnFilters, InsertColumn, UpdateColumn } from "../models/column/utils";
+import { ColumnFilters, InsertColumn, MortalUpdateColumn, UpdateColumn } from "../models/column/utils";
 import { SelectColumn } from "../models/column/extended";
 
 export abstract class ColumnService {
@@ -75,6 +75,16 @@ export abstract class ColumnService {
         const user = await UserService.get_slim(userId);
         if (!user.isAdmin) throw new OperationError("Only administrators can update columns", 403);
 
+        const updatedColumn = await prisma.column.update({
+            where: { id },
+            data: column,
+            include: { comments: true }
+        });
+
+        return this.mapColumn(updatedColumn);
+    }
+
+    static async update_mortal(id: number, column: MortalUpdateColumn): Promise<SelectColumn> {
         const updatedColumn = await prisma.column.update({
             where: { id },
             data: column,

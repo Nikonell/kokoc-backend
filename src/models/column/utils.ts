@@ -24,3 +24,5 @@ export const mortalUpdateColumn = t.Pick(
     updateColumn,
     ["likes", "dislikes"]
 )
+
+export type MortalUpdateColumn = typeof mortalUpdateColumn.static;
