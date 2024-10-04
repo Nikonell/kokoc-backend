@@ -2,9 +2,7 @@ import { $Enums } from "@prisma/client";
 import { t } from "elysia";
 
 // Category
-
 export const columnCategory = t.Enum($Enums.ColumnCategory);
-
 export type ColumnCategory = typeof columnCategory.static;
 
 // Basic

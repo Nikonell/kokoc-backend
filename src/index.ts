@@ -8,6 +8,7 @@ import authController from "./controllers/auth";
 import userController from "./controllers/user";
 import columnController from "./controllers/column";
 import prisma from "./utils/prisma";
+import cors from "@elysiajs/cors";
 
 const logger = Logestic.preset("fancy");
 
@@ -36,6 +37,7 @@ const scalar = swagger({
 const app = new Elysia({ prefix: "/api" })
     .use(scalar)
     .use(logger)
+    .use(cors())
     .use(errorsDefinition)
     .use(authMiddleware)
     .use(columnController)

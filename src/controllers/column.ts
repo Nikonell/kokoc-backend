@@ -1,6 +1,6 @@
 import Elysia, { StatusMap, t } from "elysia";
 import { ColumnService } from "../services/columns";
-import { columnFilters, insertColumn } from "../models/column/utils";
+import { columnFilters, insertColumn, updateColumn } from "../models/column/utils";
 import { errorResponseType, paginatedResponse, paginatedResponseType, successResponse, successResponseType } from "../utils/responses";
 import { extendedColumn } from "../models/column/extended";
 import { authMiddleware } from "../middleware/auth";
@@ -63,6 +63,24 @@ const columnController = new Elysia({ prefix: "/columns" })
             summary: "Create",
             description: "Create a column",
             tags: ["Columns"]
+        }
+    })
+    .patch("/:id", async ({ set, body, params, auth }) => {
+        const userId = await auth.id();
+
+        const column = await ColumnService.update(params.id, body, userId);
+
+        return successResponse(set, column);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        body: updateColumn,
+        response: {
+            200: successResponseType(extendedColumn),
+            401: errorResponseType(401, "Unauthorized"),
+            403: errorResponseType(403, "Only administrators can update columns"),
+            404: errorResponseType(404, "Column not found")
         }
     })
     .delete("/:id", async ({ set, auth, params }) => {
