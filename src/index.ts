@@ -42,11 +42,6 @@ const app = new Elysia({ prefix: "/api" })
     .use(logger)
     .use(cors())
     .use(errorsDefinition)
-    .use(authMiddleware)
-    .use(columnController)
-    .use(commentController)
-    .use(userAvatarController)
-    .use(columnBannerController)
     .onError(({ code, error, set }) => {
         switch (code) {
             case "INTERNAL_SERVER_ERROR":
@@ -62,6 +57,11 @@ const app = new Elysia({ prefix: "/api" })
                 return errorResponse(set, error.message, 500);
         }
     })
+    .use(authMiddleware)
+    .use(columnController)
+    .use(commentController)
+    .use(userAvatarController)
+    .use(columnBannerController)
     .use(authController)
     .use(userController)
     .get("/healthcheck", async () => {
