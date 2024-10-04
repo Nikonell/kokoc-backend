@@ -8,9 +8,40 @@ datasource db {
 }
 
 model User {
-    id        Int @id @default(autoincrement())
-    email     String @unique
-    firstName String
-    lastName  String
-    passwordHash   String
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  isAdmin      Boolean   @default(false)
+  email        String    @unique
+  firstName    String
+  lastName     String
+  passwordHash String
+  comments     Comment[]
+}
+
+enum ColumnCategory {
+  transfer
+  interview
+  match
+  pressRelease
+}
+
+model Column {
+  id        Int            @id @default(autoincrement())
+  createdAt DateTime       @default(now())
+  category  ColumnCategory
+  title     String
+  content   String
+  likes     Int[]         @default([])
+  dislikes  Int[]         @default([])
+  comments  Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  content   String
+  column    Column   @relation(fields: [columnId], references: [id])
+  columnId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
 }

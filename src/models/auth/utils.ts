@@ -1,11 +1,9 @@
 import { t } from "elysia";
-import { successResponseType } from "../utils/responses";
 
 export const loginUserRequest = t.Object({
     email: t.String(),
     password: t.String(),
 });
-
 export type LoginUserRequest = typeof loginUserRequest.static;
 
 export const registerUserRequest = t.Object({
@@ -14,9 +12,7 @@ export const registerUserRequest = t.Object({
     email: t.String({format: "email"}),
     password: t.RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
 });
-
 export type RegisterUserRequest = typeof registerUserRequest.static;
 
 export const authResponse = t.Null();
-
 export type AuthResponse = typeof authResponse.static;

@@ -1,14 +1,13 @@
 import Elysia from "elysia";
 import { authMiddleware } from "../middleware/auth";
-import { authResponse, loginUserRequest, registerUserRequest } from "../models/auth";
 import { errorResponseType, successResponse, successResponseType } from "../utils/responses";
 import { AuthService } from "../services/auth";
+import { authResponse, loginUserRequest, registerUserRequest } from "../models/auth/utils";
 
 const authController = new Elysia({ prefix: "/auth" })
     .use(authMiddleware)
     .post("/login", async ({set, body, auth}) => {
-        console.log(body);
-        const id = await AuthService.login_by_credentials(body);
+        const id = await AuthService.loginByCredentials(body);
         await auth.authorize(id);
 
         return successResponse(set, null);

@@ -23,10 +23,13 @@ export const authMiddleware = new Elysia()
                         maxAge: 0,
                     });
                 },
+                async loggedIn() {
+                    return !!await jwt.verify(auth.value);
+                },
                 async id() {
                     const session = await jwt.verify(auth.value);
                     if (!session) throw new UnauthorizedError();
-                    return session.id;
+                    return +session.id;
                 }
             }
         }

@@ -28,6 +28,17 @@ export const errorResponse = (set: SetObject, message: string, status = 500) => 
     } as { status: "error"; message: string };
 };
 
+export const paginatedResponse = <T>(set: SetObject, items: T[], total: number, page: number, limit: number, hasNext: boolean) => {
+    set.status = 200;
+    return successResponse(set, {
+        items,
+        total,
+        page,
+        limit,
+        hasNext
+    });
+}
+
 export const successResponseType = (dataType: TSchema) =>
     t.Object({
         status: t.Literal("success"),
@@ -47,4 +58,13 @@ export const errorResponseType = (code: number = 500, message?: string) =>
         message: message ? t.Literal(message) : t.Undefined(),
     });
 
-export const unauthorizedResponseType = errorResponseType(StatusMap.Unauthorized, "Unauthorized.");
+export const paginatedResponseType = (dataType: TSchema) =>
+    successResponseType(t.Object({
+        items: t.Array(dataType),
+        total: t.Number(),
+        page: t.Number(),
+        limit: t.Number(),
+        hasNext: t.Boolean()
+    }));
+
+export const unauthorizedResponseType = errorResponseType(StatusMap.Unauthorized, "Unauthorized");

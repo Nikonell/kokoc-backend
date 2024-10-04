@@ -3,8 +3,10 @@ import { Elysia } from "elysia";
 import { Logestic } from "logestic";
 import { authMiddleware } from "./middleware/auth";
 import { errorResponse, validationErrorResponse } from "./utils/responses";
-import authController from "./controllers/auth";
 import { errorsDefinition } from "./utils/errors";
+import authController from "./controllers/auth";
+import userController from "./controllers/user";
+import columnController from "./controllers/column";
 
 const logger = Logestic.preset("fancy");
 
@@ -17,7 +19,10 @@ const scalar = swagger({
             version: "1.0.0",
         },
         tags: [
-            {name: "Auth", description: "Authentication routes"}
+            {name: "Auth", description: "Authentication routes"},
+            {name: "Users", description: "User routes"},
+            {name: "Columns", description: "Column routes"},
+            {name: "Comments", description: "Comment routes"}
         ]
     },
     scalarConfig: {
@@ -32,6 +37,7 @@ const app = new Elysia({ prefix: "/api" })
     .use(logger)
     .use(errorsDefinition)
     .use(authMiddleware)
+    .use(columnController)
     .onError(({ code, error, set }) => {
         switch (code) {
             case "INTERNAL_SERVER_ERROR":
@@ -48,6 +54,7 @@ const app = new Elysia({ prefix: "/api" })
         }
     })
     .use(authController)
+    .use(userController)
     .listen(3000, ({ hostname, port }) => {
         console.log(`🦊 Elysia is running at ${hostname}:${port}`);
     });

@@ -1,11 +1,11 @@
 import prisma from "../utils/prisma";
 import { InternalServerError, NotFoundError, ParseError, StatusMap } from "elysia";
 import { createHash } from 'crypto';
-import type { LoginUserRequest, RegisterUserRequest } from "../models/auth";
 import { OperationError } from "../utils/errors";
+import { LoginUserRequest, RegisterUserRequest } from "../models/auth/utils";
 
 export abstract class AuthService {
-    static async login_by_credentials(data: LoginUserRequest): Promise<number> {
+    static async loginByCredentials(data: LoginUserRequest): Promise<number> {
         const hash = createHash("sha256").update(data.password).digest("hex");
         const user = await prisma.user.findUnique({
             where: {
