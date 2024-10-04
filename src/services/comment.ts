@@ -50,9 +50,9 @@ export abstract class CommentService {
         });
     }
 
-    static async create(comment: InsertComment): Promise<SelectComment> {
+    static async create(comment: InsertComment, authorId: number): Promise<SelectComment> {
         const newComment = await prisma.comment.create({
-            data: comment,
+            data: {...comment, authorId},
             include: {
                 author: true,
                 column: true
@@ -65,7 +65,7 @@ export abstract class CommentService {
     static async delete(id: number, userId: number) {
         const comment = await this.get_slim(id);
 
-        if (comment.authorId !== userId) throw new OperationError("Comments can be deleted only by their authors or administrator", 403);;
+        if (comment.authorId !== userId) throw new OperationError("Comments can be deleted only by their authors or administrators", 403);;
 
         await prisma.comment.delete({
             where: {

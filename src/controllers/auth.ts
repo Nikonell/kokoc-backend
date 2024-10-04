@@ -40,7 +40,7 @@ const authController = new Elysia({ prefix: "/auth" })
             tags: ["Auth"]
         }
     })
-    .post("/logout", async ({ set, auth }) => {
+    .get("/logout", async ({ set, auth }) => {
         await auth.logout();
 
         return successResponse(set, null);

@@ -1,7 +1,7 @@
 import Elysia, { StatusMap, t } from "elysia";
 import { ColumnService } from "../services/column";
 import { columnFilters, insertColumn, updateColumn } from "../models/column/utils";
-import { errorResponseType, paginatedResponse, paginatedResponseType, successResponse, successResponseType } from "../utils/responses";
+import { errorResponseType, paginatedResponse, paginatedResponseType, successResponse, successResponseType, unauthorizedResponseType } from "../utils/responses";
 import { extendedColumn } from "../models/column/extended";
 import { authMiddleware } from "../middleware/auth";
 import { OperationError } from "../utils/errors";
@@ -18,9 +18,7 @@ const columnController = new Elysia({ prefix: "/columns" })
         return paginatedResponse(set, columns, total, query.page, query.limit, hasNext);
     }, {
         query: columnFilters,
-        response: {
-            200: paginatedResponseType(extendedColumn),
-        },
+        response: { 200: paginatedResponseType(extendedColumn) },
         detail: {
             summary: "Get all",
             description: "Get all columns",
@@ -34,9 +32,7 @@ const columnController = new Elysia({ prefix: "/columns" })
 
         return successResponse(set, column);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         response: {
             200: successResponseType(extendedColumn),
             404: errorResponseType(404, "Column not found")
@@ -57,7 +53,7 @@ const columnController = new Elysia({ prefix: "/columns" })
         body: insertColumn,
         response: {
             201: successResponseType(extendedColumn),
-            401: errorResponseType(401, "Unauthorized"),
+            401: unauthorizedResponseType,
             403: errorResponseType(403, "Only administrators can create columns")
         },
         detail: {
@@ -73,13 +69,11 @@ const columnController = new Elysia({ prefix: "/columns" })
 
         return successResponse(set, column);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         body: updateColumn,
         response: {
             200: successResponseType(extendedColumn),
-            401: errorResponseType(401, "Unauthorized"),
+            401: unauthorizedResponseType,
             403: errorResponseType(403, "Only administrators can update columns"),
             404: errorResponseType(404, "Column not found")
         },
@@ -94,14 +88,12 @@ const columnController = new Elysia({ prefix: "/columns" })
 
         await ColumnService.delete(params.id, userId);
 
-        return successResponse(set, null);
+        return successResponse(set, null, 204);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         response: {
-            200: successResponseType(t.Null()),
-            401: errorResponseType(401, "Unauthorized"),
+            204: successResponseType(t.Null()),
+            401: unauthorizedResponseType,
             403: errorResponseType(403, "Only administrators can delete columns"),
             404: errorResponseType(404, "Column not found")
         },
@@ -113,21 +105,17 @@ const columnController = new Elysia({ prefix: "/columns" })
     })
     .post("/:id/like", async ({ set, params, auth }) => {
         const userId = await auth.id();
-        const column = await ColumnService.get_unmapped(params.id);
 
+        const column = await ColumnService.get_unmapped(params.id);
         if (column.likes.includes(userId)) throw new OperationError("Already liked", 409);
-        await ColumnService.update_mortal(params.id, {
-            likes: [...column.likes, userId]
-        });
+        await ColumnService.update_mortal(params.id, { likes: [...column.likes, userId] });
 
         return successResponse(set, null);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         response: {
             200: successResponseType(t.Null()),
-            401: errorResponseType(401, "Unauthorized"),
+            401: unauthorizedResponseType,
             404: errorResponseType(404, "Column not found"),
             409: errorResponseType(409, "Already liked")
         },
@@ -139,21 +127,17 @@ const columnController = new Elysia({ prefix: "/columns" })
     })
     .delete("/:id/like", async ({ set, params, auth }) => {
         const userId = await auth.id();
-        const column = await ColumnService.get_unmapped(params.id);
 
+        const column = await ColumnService.get_unmapped(params.id);
         if (!column.likes.includes(userId)) throw new OperationError("Not liked", 409);
-        await ColumnService.update_mortal(params.id, {
-            likes: column.likes.filter(id => id !== userId)
-        });
+        await ColumnService.update_mortal(params.id, { likes: column.likes.filter(id => id !== userId) });
 
         return successResponse(set, null);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         response: {
             200: successResponseType(t.Null()),
-            401: errorResponseType(401, "Unauthorized"),
+            401: unauthorizedResponseType,
             404: errorResponseType(404, "Column not found"),
             409: errorResponseType(409, "Not liked")
         },
@@ -163,23 +147,19 @@ const columnController = new Elysia({ prefix: "/columns" })
             tags: ["Columns"]
         }
     })
-    .post("/:id/dislike", async ({ set, params, body, auth }) => {
+    .post("/:id/dislike", async ({ set, params, auth }) => {
         const userId = await auth.id();
-        const column = await ColumnService.get_unmapped(params.id);
 
+        const column = await ColumnService.get_unmapped(params.id);
         if (column.dislikes.includes(userId)) throw new OperationError("Already disliked", 409);
-        await ColumnService.update_mortal(params.id, {
-            dislikes: [...column.dislikes, userId]
-        });
+        await ColumnService.update_mortal(params.id, { dislikes: [...column.dislikes, userId] });
 
         return successResponse(set, null);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         response: {
             200: successResponseType(t.Null()),
-            401: errorResponseType(401, "Unauthorized"),
+            401: unauthorizedResponseType,
             404: errorResponseType(404, "Column not found"),
             409: errorResponseType(409, "Already disliked")
         },
@@ -191,21 +171,17 @@ const columnController = new Elysia({ prefix: "/columns" })
     })
     .delete("/:id/dislike", async ({ set, params, auth }) => {
         const userId = await auth.id();
-        const column = await ColumnService.get_unmapped(params.id);
 
+        const column = await ColumnService.get_unmapped(params.id);
         if (!column.dislikes.includes(userId)) throw new OperationError("Not disliked", 409);
-        await ColumnService.update_mortal(params.id, {
-            dislikes: column.dislikes.filter(id => id !== userId)
-        });
+        await ColumnService.update_mortal(params.id, { dislikes: column.dislikes.filter(id => id !== userId) });
 
         return successResponse(set, null);
     }, {
-        params: t.Object({
-            id: t.Number()
-        }),
+        params: t.Object({ id: t.Number() }),
         response: {
             200: successResponseType(t.Null()),
-            401: errorResponseType(401, "Unauthorized"),
+            401: unauthorizedResponseType,
             404: errorResponseType(404, "Column not found"),
             409: errorResponseType(409, "Not disliked")
         },

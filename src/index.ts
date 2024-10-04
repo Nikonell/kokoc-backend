@@ -9,6 +9,9 @@ import userController from "./controllers/user";
 import columnController from "./controllers/column";
 import prisma from "./utils/prisma";
 import cors from "@elysiajs/cors";
+import commentController from "./controllers/comment";
+import userAvatarController from "./controllers/userAvatar";
+import columnBannerController from "./controllers/columnBanner";
 
 const logger = Logestic.preset("fancy");
 
@@ -41,6 +44,9 @@ const app = new Elysia({ prefix: "/api" })
     .use(errorsDefinition)
     .use(authMiddleware)
     .use(columnController)
+    .use(commentController)
+    .use(userAvatarController)
+    .use(columnBannerController)
     .onError(({ code, error, set }) => {
         switch (code) {
             case "INTERNAL_SERVER_ERROR":
