@@ -21,21 +21,20 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# [optional] tests & build
+# [optional] tests
 ENV NODE_ENV=production
 RUN bun test
 
+# Build bundle
+RUN cd /app && bun run build
 
 # copy production dependencies and source code into final image
 FROM base as release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /app/src ./src
+COPY --from=prerelease /app/build/server.js
 COPY --from=prerelease /app/prisma ./prisma
-COPY --from=prerelease /app/package.json .
 COPY startup.sh /app/startup.sh
 
 RUN ["chmod", "+x", "/app/startup.sh"]
-RUN bunx prisma generate
 
 USER bun
 EXPOSE 3000/tcp
