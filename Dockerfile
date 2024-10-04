@@ -30,7 +30,7 @@ RUN cd /app && bun run build
 
 # copy production dependencies and source code into final image
 FROM base as release
-COPY --from=prerelease /app/build/server.js /app/server.js
+COPY --from=prerelease /app/build/server.js ./server.js
 COPY --from=prerelease /app/prisma ./prisma
 COPY startup.sh /app/startup.sh
 
