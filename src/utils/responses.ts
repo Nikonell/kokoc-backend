@@ -4,20 +4,20 @@ interface SetObject {
     status?: number | keyof StatusMap;
 }
 
-export const successResponse = (set: SetObject, data: any, status = 200) => {
+export const successResponse = <T>(set: SetObject, data: T, status = 200) => {
     set.status = status;
     return {
         status: "success",
         data,
-    } as { status: "success"; data: any };
+    } as { status: "success"; data: T };
 };
 
-export const validationErrorResponse = (set: SetObject, data: any, status: number) => {
+export const validationErrorResponse = <T>(set: SetObject, data: T, status: number) => {
     set.status = status;
     return {
         status: "validation_error",
         data,
-    } as { status: "validation_error"; data: any };
+    } as { status: "validation_error"; data: T };
 };
 
 export const errorResponse = (set: SetObject, message: string, status = 500) => {
@@ -28,7 +28,7 @@ export const errorResponse = (set: SetObject, message: string, status = 500) => 
     } as { status: "error"; message: string };
 };
 
-export const paginatedResponse = (set: SetObject, items: any[], total: number, page: number, limit: number, hasNext: boolean) => {
+export const paginatedResponse = <T>(set: SetObject, items: T[], total: number, page: number, limit: number, hasNext: boolean) => {
     set.status = 200;
     return successResponse(set, {
         items,
