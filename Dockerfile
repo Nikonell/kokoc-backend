@@ -1,5 +1,6 @@
 FROM oven/bun:latest AS base
 WORKDIR /app
+VOLUME /app/uploads
 
 RUN apt-get update && apt install curl postgresql-client -y
 
@@ -33,8 +34,6 @@ COPY --from=prerelease /app/prisma ./prisma
 COPY --from=prerelease /app/uploads ./uploads
 COPY --from=prerelease /app/package.json .
 COPY startup.sh /app/startup.sh
-
-VOLUME /app/uploads
 
 RUN ["chmod", "+x", "/app/startup.sh"]
 RUN bunx prisma generate
