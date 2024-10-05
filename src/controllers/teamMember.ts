@@ -204,6 +204,11 @@ const teamMemberController = new Elysia({ prefix: "/team/members" })
             401: unauthorizedResponseType,
             403: errorResponseType(403, "Only admins can delete attachments"),
             404: errorResponseType(404, "Attachment not found")
+        },
+        detail: {
+            summary: "Delete attachment",
+            description: "Delete a team member's attachment",
+            tags: ["Team Members"]
         }
     });
 
