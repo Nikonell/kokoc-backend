@@ -1,6 +1,6 @@
 import Elysia, { t } from "elysia";
 import { authMiddleware } from "../middleware/auth";
-import { errorResponse, errorResponseType, successResponse, successResponseType, unauthorizedResponseType } from "../utils/responses";
+import { errorResponseType, successResponse, successResponseType, unauthorizedResponseType } from "../utils/responses";
 import { getUpload, saveUpload } from "../utils/uploads";
 
 const userAvatarController = new Elysia({ prefix: "/users/avatars" })

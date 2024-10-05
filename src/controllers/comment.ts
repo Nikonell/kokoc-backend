@@ -7,7 +7,7 @@ import { extendedComment } from "../models/comment/extended";
 
 const commentController = new Elysia({ prefix: "/comments" })
     .use(authMiddleware)
-    .get("", async ({ set, query, auth }) => {
+    .get("", async ({ set, query }) => {
         const comments = await CommentService.get_filtered(query);
         const total = await CommentService.count_filtered(query);
         const hasNext = total - (query.page * query.limit) > 0;

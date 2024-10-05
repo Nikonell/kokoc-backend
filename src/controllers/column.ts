@@ -2,7 +2,7 @@ import Elysia, { StatusMap, t } from "elysia";
 import { ColumnService } from "../services/column";
 import { columnFilters, insertColumn, updateColumn } from "../models/column/utils";
 import { errorResponseType, paginatedResponse, paginatedResponseType, successResponse, successResponseType, unauthorizedResponseType } from "../utils/responses";
-import { extendedColumn } from "../models/column/extended";
+import { mappedExtendedColumn } from "../models/column/extended";
 import { authMiddleware } from "../middleware/auth";
 import { OperationError } from "../utils/errors";
 
@@ -18,7 +18,7 @@ const columnController = new Elysia({ prefix: "/columns" })
         return paginatedResponse(set, columns, total, query.page, query.limit, hasNext);
     }, {
         query: columnFilters,
-        response: { 200: paginatedResponseType(extendedColumn) },
+        response: { 200: paginatedResponseType(mappedExtendedColumn) },
         detail: {
             summary: "Get all",
             description: "Get all columns",
@@ -34,7 +34,7 @@ const columnController = new Elysia({ prefix: "/columns" })
     }, {
         params: t.Object({ id: t.Number() }),
         response: {
-            200: successResponseType(extendedColumn),
+            200: successResponseType(mappedExtendedColumn),
             404: errorResponseType(404, "Column not found")
         },
         detail: {
@@ -52,7 +52,7 @@ const columnController = new Elysia({ prefix: "/columns" })
     }, {
         body: insertColumn,
         response: {
-            201: successResponseType(extendedColumn),
+            201: successResponseType(mappedExtendedColumn),
             401: unauthorizedResponseType,
             403: errorResponseType(403, "Only administrators can create columns")
         },
@@ -72,7 +72,7 @@ const columnController = new Elysia({ prefix: "/columns" })
         params: t.Object({ id: t.Number() }),
         body: updateColumn,
         response: {
-            200: successResponseType(extendedColumn),
+            200: successResponseType(mappedExtendedColumn),
             401: unauthorizedResponseType,
             403: errorResponseType(403, "Only administrators can update columns"),
             404: errorResponseType(404, "Column not found")
