@@ -1,6 +1,7 @@
 import { NotFoundError } from "elysia";
 import prisma from "../utils/prisma";
 import { BasicUser } from "../models/user/basic";
+import { SelectUser } from "../models/user/extended";
 
 export abstract class UserService {
     static async get(id: number): Promise<SelectUser> {

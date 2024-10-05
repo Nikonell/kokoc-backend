@@ -1,5 +1,5 @@
 import prisma from "../utils/prisma";
-import { InternalServerError, NotFoundError, ParseError, StatusMap } from "elysia";
+import { NotFoundError, StatusMap } from "elysia";
 import { createHash } from 'crypto';
 import { OperationError } from "../utils/errors";
 import { LoginUserRequest, RegisterUserRequest } from "../models/auth/utils";

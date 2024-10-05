@@ -2,7 +2,7 @@ import { NotFoundError } from "elysia";
 import prisma from "../utils/prisma";
 import { UserService } from "./user";
 import { OperationError } from "../utils/errors";
-import { BasicColumn, columnCategory, MappedColumn } from "../models/column/basic";
+import { BasicColumn, MappedColumn } from "../models/column/basic";
 import { ColumnFilters, InsertColumn, MortalUpdateColumn, UpdateColumn } from "../models/column/utils";
 import { SelectColumn } from "../models/column/extended";
 
