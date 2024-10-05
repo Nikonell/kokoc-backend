@@ -38,7 +38,7 @@ const scalar = swagger({
     },
 });
 
-new Elysia({ prefix: "/api" })
+new Elysia({ prefix: "/api", precompile: true })
     .use(scalar)
     .use(logger)
     .use(cors())
