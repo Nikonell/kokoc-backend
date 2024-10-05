@@ -70,7 +70,7 @@ model TeamMember {
 model TeamMemberStatistics {
   id           Int        @id @default(autoincrement())
   createdAt    DateTime   @default(now())
-  games_played Int        @default(0)
+  gamesPlayed Int         @default(0)
   goals        Int        @default(0)
   assists      Int        @default(0)
   yellowCards  Int        @default(0)
