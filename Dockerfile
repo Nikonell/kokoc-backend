@@ -34,6 +34,8 @@ COPY --from=prerelease /app/uploads ./uploads
 COPY --from=prerelease /app/package.json .
 COPY startup.sh /app/startup.sh
 
+VOLUME /app/uploads
+
 RUN ["chmod", "+x", "/app/startup.sh"]
 RUN bunx prisma generate
 
