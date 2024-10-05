@@ -33,8 +33,17 @@ export abstract class CommentService {
     }
 
     static async getFiltered(filters: CommentFilters): Promise<SelectComment[]> {
+        const { columnId, authorId, page, limit } = filters;
+
         const comments = await prisma.comment.findMany({
-            where: filters,
+            where: {
+                AND: [
+                    { columnId },
+                    { authorId }
+                ]
+            },
+            skip: page * limit,
+            take: limit,
             orderBy: { createdAt: "desc" },
             include: {
                 author: true,
@@ -46,8 +55,15 @@ export abstract class CommentService {
     }
 
     static async countFiltered(filters: CommentFilters): Promise<number> {
+        const { columnId, authorId } = filters;
+
         return await prisma.comment.count({
-            where: filters
+            where: {
+                AND: [
+                    { columnId },
+                    { authorId }
+                ]
+            },
         });
     }
 
