@@ -1,10 +1,12 @@
 import Elysia, { t } from "elysia";
 import { authMiddleware } from "../middleware/auth";
 import { errorResponseType, successResponse, successResponseType, unauthorizedResponseType } from "../utils/responses";
-import { extendedTeamMember, extendedTeamMemberStatistics } from "../models/teamMember/extended";
+import { extendedTeamMember, extendedTeamMemberAttachment, extendedTeamMemberStatistics } from "../models/teamMember/extended";
 import { TeamMemberService } from "../services/teamMember";
-import { insertTeamMember, updateTeamMember, updateTeamMemberStatistics } from "../models/teamMember/utils";
-import { getUpload } from "../utils/uploads";
+import { insertTeamMember, insertTeamMemberAttachment, updateTeamMember, updateTeamMemberStatistics } from "../models/teamMember/utils";
+import { deleteUpload, getUpload, saveUpload } from "../utils/uploads";
+import { UserService } from "../services/user";
+import { OperationError } from "../utils/errors";
 
 const teamMemberController = new Elysia({ prefix: "/team/members" })
     .use(authMiddleware)
@@ -155,6 +157,53 @@ const teamMemberController = new Elysia({ prefix: "/team/members" })
             summary: "Get attachment",
             description: "Get a team member's attachment",
             tags: ["Team Members"]
+        }
+    })
+    .post("/attachments", async ({ set, body, auth }) => {
+        const userId = await auth.id();
+        const user = await UserService.get(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can upload attachments", 403);
+
+        const fileName = Date.now() + "-" + body.file.name;
+        await saveUpload("teamMemberAttachments", fileName, body.file);
+        const attachment = await TeamMemberService.createAttachment(body.teamMemberId, fileName, userId);
+
+        return successResponse(set, attachment, 201);
+    }, {
+        body: insertTeamMemberAttachment,
+        response: {
+            201: successResponseType(extendedTeamMemberAttachment),
+            401: unauthorizedResponseType,
+            403: errorResponseType(403, "Only admins can upload attachments"),
+            404: errorResponseType(404, "Team member not found")
+        },
+        detail: {
+            summary: "Upload attachment",
+            description: "Upload a team member's attachment",
+            tags: ["Team Members"]
+        }
+    })
+    .delete("/attachment/:id", async ({ set, params, auth }) => {
+        const userId = await auth.id();
+        const user = await UserService.get(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can delete attachments", 403);
+
+        const attachment = await TeamMemberService.getAttachment(params.id);
+        if (!attachment) throw new OperationError("Attachment not found", 404);
+
+        await deleteUpload("teamMemberAttachments", attachment.filename);
+        await TeamMemberService.deleteAttachment(params.id, userId);
+
+        return successResponse(set, null);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            204: successResponseType(t.Null()),
+            401: unauthorizedResponseType,
+            403: errorResponseType(403, "Only admins can delete attachments"),
+            404: errorResponseType(404, "Attachment not found")
         }
     });
 

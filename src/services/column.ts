@@ -132,7 +132,7 @@ export abstract class ColumnService {
     }
 
     private static async mapBasicColumn(column: BasicColumn, userId?: number): Promise<MappedColumn> {
-        const image = await uploadExists("banners", `${column.id}`)
+        const image = await uploadExists("columnBanners", `${column.id}`)
             ? `/api/columns/banners/${column.id}`
             : null;
 
@@ -147,7 +147,7 @@ export abstract class ColumnService {
     }
 
     private static async mapExtendedColumn(column: ExtendedColumn, userId?: number): Promise<MappedExtendedColumn> {
-        const image = await uploadExists("banners", `${column.id}`)
+        const image = await uploadExists("columnBanners", `${column.id}`)
             ? `/api/columns/banners/${column.id}`
             : null;
 

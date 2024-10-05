@@ -8,7 +8,7 @@ import { OperationError } from "../utils/errors";
 const columnBannerController = new Elysia({ prefix: "/columns/banners" })
     .use(authMiddleware)
     .get("/:id", async ({ params }) => {
-        return await getUpload("banners", `${params.id}`);
+        return await getUpload("columnBanners", `${params.id}`);
     }, {
         params: t.Object({ id: t.Number() }),
         response: { 404: errorResponseType(404, "File not found") },

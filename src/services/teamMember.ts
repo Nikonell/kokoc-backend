@@ -96,6 +96,23 @@ export abstract class TeamMemberService {
         return attachment;
     }
 
+    static async createAttachment(teamMemberId: number, filename: string, userId: number): Promise<ExtendedTeamMemberAttachment> {
+        const user = await UserService.getSlim(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can create attachments", 403);
+
+        const teamMember = await this.get(teamMemberId);
+
+        const attachment = await prisma.teamMemberAttachment.create({
+            data: {
+                teamMemberId: teamMember.id,
+                filename
+            },
+            include: { teamMember: true }
+        });
+
+        return attachment;
+    }
+
     static async deleteAttachment(id: number, userId: number): Promise<void> {
         const user = await UserService.getSlim(userId);
         if (!user.isAdmin) throw new OperationError("Only admins can delete attachments", 403);

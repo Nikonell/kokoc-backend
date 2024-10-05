@@ -8,6 +8,15 @@ export const insertTeamMember = t.Omit(
 );
 export type InsertTeamMember = typeof insertTeamMember.static;
 
+export const insertTeamMemberAttachment = t.Object({
+    teamMemberId: t.Number({ minimum: 1 }),
+    file: t.File({
+        maxSize: "5m",
+        type: ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp", "image/svg+xml"]
+    })
+});
+export type InsertTeamMemberAttachment = typeof insertTeamMemberAttachment.static;
+
 // Update
 export const updateTeamMember = t.Mapped(
     t.KeyOf(t.Omit(basicTeamMember, ["id", "createdAt", "avatar"])),
