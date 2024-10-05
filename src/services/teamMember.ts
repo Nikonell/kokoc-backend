@@ -1,5 +1,5 @@
 import { NotFoundError } from "elysia";
-import { ExtendedTeamMember, ExtendedTeamMemberStatistics } from "../models/teamMember/extended";
+import { ExtendedTeamMember, ExtendedTeamMemberAttachment, ExtendedTeamMemberStatistics } from "../models/teamMember/extended";
 import prisma from "../utils/prisma";
 import { InsertTeamMember, UpdateTeamMember, UpdateTeamMemberStatistics } from "../models/teamMember/utils";
 import { UserService } from "./user";
@@ -84,5 +84,22 @@ export abstract class TeamMemberService {
         });
 
         return updatedStatistics;
+    }
+
+    static async getAttachment(id: number): Promise<ExtendedTeamMemberAttachment> {
+        const attachment = await prisma.teamMemberAttachment.findUnique({
+            where: { id },
+            include: { teamMember: true }
+        });
+
+        if (!attachment) throw new NotFoundError("Attachment not found");
+        return attachment;
+    }
+
+    static async deleteAttachment(id: number, userId: number): Promise<void> {
+        const user = await UserService.getSlim(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can delete attachments", 403);
+
+        await prisma.teamMemberAttachment.delete({ where: { id } });
     }
 }

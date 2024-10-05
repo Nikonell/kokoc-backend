@@ -4,6 +4,7 @@ import { errorResponseType, successResponse, successResponseType, unauthorizedRe
 import { extendedTeamMember, extendedTeamMemberStatistics } from "../models/teamMember/extended";
 import { TeamMemberService } from "../services/teamMember";
 import { insertTeamMember, updateTeamMember, updateTeamMemberStatistics } from "../models/teamMember/utils";
+import { getUpload } from "../utils/uploads";
 
 const teamMemberController = new Elysia({ prefix: "/team/members" })
     .use(authMiddleware)
@@ -137,6 +138,22 @@ const teamMemberController = new Elysia({ prefix: "/team/members" })
         detail: {
             summary: "Update statistics",
             description: "Update a team member's statistics",
+            tags: ["Team Members"]
+        }
+    })
+    .get("/attachments/:id", async ({ params }) => {
+        const attachment = await TeamMemberService.getAttachment(params.id);
+        return await getUpload("teamMemberAttachments", attachment.filename);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            404: errorResponseType(404, "Attachment not found")
+        },
+        detail: {
+            summary: "Get attachment",
+            description: "Get a team member's attachment",
             tags: ["Team Members"]
         }
     });

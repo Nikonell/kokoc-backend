@@ -5,6 +5,7 @@ import { OperationError } from "../utils/errors";
 import { BasicColumn, MappedColumn } from "../models/column/basic";
 import { ColumnFilters, InsertColumn, MortalUpdateColumn, UpdateColumn } from "../models/column/utils";
 import { ExtendedColumn, MappedExtendedColumn } from "../models/column/extended";
+import { uploadExists } from "../utils/uploads";
 
 export abstract class ColumnService {
     static async get(id: number, userId?: number): Promise<MappedExtendedColumn> {
@@ -15,12 +16,12 @@ export abstract class ColumnService {
 
         if (!column) throw new NotFoundError("Column not found");
 
-        return this.mapExtendedColumn(column, userId);
+        return await this.mapExtendedColumn(column, userId);
     }
 
     static async get_slim(id: number, userId?: number): Promise<MappedColumn> {
         const column = await this.getUnmapped(id);
-        return this.mapBasicColumn(column, userId);
+        return await this.mapBasicColumn(column, userId);
     }
 
     static async getUnmapped(id: number): Promise<BasicColumn> {
@@ -60,7 +61,12 @@ export abstract class ColumnService {
             }
         });
 
-        return columns.map(column => this.mapExtendedColumn(column, userId));
+        const mappedColumns = [];
+        for (const column of columns) {
+            mappedColumns.push(await this.mapExtendedColumn(column, userId));
+        }
+
+        return mappedColumns;
     }
 
     static async countFiltered(filters: ColumnFilters): Promise<number> {
@@ -104,7 +110,7 @@ export abstract class ColumnService {
             include: { comments: true }
         });
 
-        return this.mapExtendedColumn(updatedColumn);
+        return await this.mapExtendedColumn(updatedColumn);
     }
 
     static async updateMortal(id: number, column: MortalUpdateColumn): Promise<MappedExtendedColumn> {
@@ -114,7 +120,7 @@ export abstract class ColumnService {
             include: { comments: true }
         });
 
-        return this.mapExtendedColumn(updatedColumn);
+        return await this.mapExtendedColumn(updatedColumn);
     }
 
     static async delete(id: number, userId: number) {
@@ -125,9 +131,14 @@ export abstract class ColumnService {
         if (!column.id) throw new NotFoundError("Column not found");
     }
 
-    private static mapBasicColumn(column: BasicColumn, userId?: number): MappedColumn {
+    private static async mapBasicColumn(column: BasicColumn, userId?: number): Promise<MappedColumn> {
+        const image = await uploadExists("banners", `${column.id}`)
+            ? `/api/columns/banners/${column.id}`
+            : null;
+
         return {
             ...column,
+            image,
             likes: column.likes.length,
             dislikes: column.dislikes.length,
             liked: userId ? column.likes.includes(userId) : false,
@@ -135,9 +146,14 @@ export abstract class ColumnService {
         };
     }
 
-    private static mapExtendedColumn(column: ExtendedColumn, userId?: number): MappedExtendedColumn {
+    private static async mapExtendedColumn(column: ExtendedColumn, userId?: number): Promise<MappedExtendedColumn> {
+        const image = await uploadExists("banners", `${column.id}`)
+            ? `/api/columns/banners/${column.id}`
+            : null;
+
         return {
             ...column,
+            image,
             likes: column.likes.length,
             dislikes: column.dislikes.length,
             liked: userId ? column.likes.includes(userId) : false,

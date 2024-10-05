@@ -22,6 +22,7 @@ export type BasicColumn = typeof basicColumn.static;
 export const mappedColumn = t.Composite([
     t.Omit(basicColumn, ["likes", "dislikes"]),
     t.Object({
+        image: t.Nullable(t.String()),
         likes: t.Number({ minimum: 0 }),
         dislikes: t.Number({ minimum: 0 }),
         liked: t.Boolean(),

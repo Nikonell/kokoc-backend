@@ -1,6 +1,6 @@
 import { BunFile } from "bun";
 import { NotFoundError } from "elysia";
-import { mkdir } from "node:fs/promises";
+import { mkdir, unlink } from "node:fs/promises";
 
 const UPLOADS_PATH = 'uploads';
 
@@ -28,3 +28,15 @@ export const saveUpload = async (prefix: string, filename: string, file: File): 
     const bunfile = Bun.file(`${dir}/${filename}`);
     await Bun.write(bunfile, file);
 }
+
+export const deleteUpload = async (prefix: string, filename: string): Promise<void> => {
+    const path = `${UPLOADS_PATH}/${prefix}/${filename}`;
+    const fileExists = await Bun.file(path).exists();
+    if (fileExists) await unlink(path);
+}
+
+export const uploadExists = async (prefix: string, filename: string): Promise<boolean> => {
+    const path = `${UPLOADS_PATH}/${prefix}/${filename}`;
+    const file = await getFile(path);
+    return file !== null;
+};
