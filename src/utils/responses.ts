@@ -28,14 +28,14 @@ export const errorResponse = (set: SetObject, message: string, status = 500) => 
     } as { status: "error"; message: string };
 };
 
-export const paginatedResponse = <T>(set: SetObject, items: T[], total: number, page: number, limit: number, hasNext: boolean) => {
+export const paginatedResponse = <T>(set: SetObject, items: T[], total: number, page: number, limit: number) => {
     set.status = 200;
     return successResponse(set, {
         items,
         total,
         page,
         limit,
-        hasNext
+        hasNext: page * limit + limit < total,
     });
 }
 

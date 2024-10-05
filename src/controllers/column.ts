@@ -13,9 +13,8 @@ const columnController = new Elysia({ prefix: "/columns" })
 
         const columns = await ColumnService.getFiltered(query, userId);
         const total = await ColumnService.countFiltered(query);
-        const hasNext = total - (query.page * query.limit) > 0;
 
-        return paginatedResponse(set, columns, total, query.page, query.limit, hasNext);
+        return paginatedResponse(set, columns, total, query.page, query.limit);
     }, {
         query: columnFilters,
         response: { 200: paginatedResponseType(mappedExtendedColumn) },

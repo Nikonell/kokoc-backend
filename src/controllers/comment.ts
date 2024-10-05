@@ -10,9 +10,8 @@ const commentController = new Elysia({ prefix: "/comments" })
     .get("", async ({ set, query }) => {
         const comments = await CommentService.getFiltered(query);
         const total = await CommentService.countFiltered(query);
-        const hasNext = total - (query.page * query.limit) > 0;
 
-        return paginatedResponse(set, comments, total, query.page, query.limit, hasNext);
+        return paginatedResponse(set, comments, total, query.page, query.limit);
     }, {
         query: commentFilters,
         response: {
