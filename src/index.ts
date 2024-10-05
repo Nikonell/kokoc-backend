@@ -1,7 +1,6 @@
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { Logestic } from "logestic";
-import { authMiddleware } from "./middleware/auth";
 import { errorResponse, validationErrorResponse } from "./utils/responses";
 import { errorsDefinition } from "./utils/errors";
 import authController from "./controllers/auth";
@@ -12,6 +11,7 @@ import cors from "@elysiajs/cors";
 import commentController from "./controllers/comment";
 import userAvatarController from "./controllers/userAvatar";
 import columnBannerController from "./controllers/columnBanner";
+import teamMemberController from "./controllers/teamMember";
 
 const logger = Logestic.preset("fancy");
 
@@ -27,7 +27,8 @@ const scalar = swagger({
             {name: "Auth", description: "Authentication routes"},
             {name: "Users", description: "User routes"},
             {name: "Columns", description: "Column routes"},
-            {name: "Comments", description: "Comment routes"}
+            {name: "Comments", description: "Comment routes"},
+            {name: "Team Members", description: "Team member routes"}
         ]
     },
     scalarConfig: {
@@ -57,13 +58,13 @@ new Elysia({ prefix: "/api" })
                 return errorResponse(set, error.message, 500);
         }
     })
-    .use(authMiddleware)
     .use(columnController)
     .use(commentController)
     .use(userAvatarController)
     .use(columnBannerController)
     .use(authController)
     .use(userController)
+    .use(teamMemberController)
     .get("/healthcheck", async () => {
         await prisma.$executeRaw`SELECT PG_SLEEP(0);`;
         return { status: "success" };

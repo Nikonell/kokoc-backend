@@ -17,7 +17,7 @@ export type ColumnFilters = typeof columnFilters.static;
 // Update
 export const updateColumn = t.Mapped(
     t.KeyOf(t.Omit(basicColumn, ["id", "createdAt"])),
-    K => t.Optional(t.Index(t.Omit(basicColumn, ["id", "createdAt"]), K))
+    K => t.Optional(t.Index(basicColumn, K))
 );
 export type UpdateColumn = typeof updateColumn.static;
 

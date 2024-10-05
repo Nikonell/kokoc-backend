@@ -21,7 +21,7 @@ const columnBannerController = new Elysia({ prefix: "/columns/banners" })
     .post("/:id", async ({ set, params, body, auth }) => {
         const userId = await auth.id();
 
-        const user = await UserService.get_slim(userId);
+        const user = await UserService.getSlim(userId);
         if (!user?.isAdmin) throw new OperationError("Only administrators can upload column banners", StatusMap.Forbidden);
 
         await saveUpload("columnBanners", String(params.id), body.file);

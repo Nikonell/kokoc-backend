@@ -21,7 +21,7 @@ export abstract class CommentService {
         return comment;
     }
 
-    static async get_slim(id: number): Promise<BasicComment> {
+    static async getSlim(id: number): Promise<BasicComment> {
         const comment = await prisma.comment.findUnique({
             where: {
                 id
@@ -32,7 +32,7 @@ export abstract class CommentService {
         return comment;
     }
 
-    static async get_filtered(filters: CommentFilters): Promise<SelectComment[]> {
+    static async getFiltered(filters: CommentFilters): Promise<SelectComment[]> {
         const comments = await prisma.comment.findMany({
             where: filters,
             orderBy: { createdAt: "desc" },
@@ -45,7 +45,7 @@ export abstract class CommentService {
         return comments;
     }
 
-    static async count_filtered(filters: CommentFilters): Promise<number> {
+    static async countFiltered(filters: CommentFilters): Promise<number> {
         return await prisma.comment.count({
             where: filters
         });
@@ -64,7 +64,7 @@ export abstract class CommentService {
     }
 
     static async delete(id: number, userId: number) {
-        const comment = await this.get_slim(id);
+        const comment = await this.getSlim(id);
 
         if (comment.authorId !== userId) throw new OperationError("Comments can be deleted only by their authors or administrators", 403);;
 

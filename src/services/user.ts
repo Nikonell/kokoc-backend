@@ -18,7 +18,7 @@ export abstract class UserService {
         return user;
     }
 
-    static async get_slim(id: number): Promise<BasicUser> {
+    static async getSlim(id: number): Promise<BasicUser> {
         const user = await prisma.user.findUnique({
             where: {
                 id

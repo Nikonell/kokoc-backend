@@ -11,8 +11,8 @@ const columnController = new Elysia({ prefix: "/columns" })
     .get("", async ({ set, query, auth }) => {
         const userId = await auth.loggedIn() ? await auth.id() : undefined;
 
-        const columns = await ColumnService.get_filtered(query, userId);
-        const total = await ColumnService.count_filtered(query);
+        const columns = await ColumnService.getFiltered(query, userId);
+        const total = await ColumnService.countFiltered(query);
         const hasNext = total - (query.page * query.limit) > 0;
 
         return paginatedResponse(set, columns, total, query.page, query.limit, hasNext);
@@ -106,9 +106,9 @@ const columnController = new Elysia({ prefix: "/columns" })
     .post("/:id/like", async ({ set, params, auth }) => {
         const userId = await auth.id();
 
-        const column = await ColumnService.get_unmapped(params.id);
+        const column = await ColumnService.getUnmapped(params.id);
         if (column.likes.includes(userId)) throw new OperationError("Already liked", 409);
-        await ColumnService.update_mortal(params.id, { likes: [...column.likes, userId] });
+        await ColumnService.updateMortal(params.id, { likes: [...column.likes, userId] });
 
         return successResponse(set, null);
     }, {
@@ -128,9 +128,9 @@ const columnController = new Elysia({ prefix: "/columns" })
     .delete("/:id/like", async ({ set, params, auth }) => {
         const userId = await auth.id();
 
-        const column = await ColumnService.get_unmapped(params.id);
+        const column = await ColumnService.getUnmapped(params.id);
         if (!column.likes.includes(userId)) throw new OperationError("Not liked", 409);
-        await ColumnService.update_mortal(params.id, { likes: column.likes.filter(id => id !== userId) });
+        await ColumnService.updateMortal(params.id, { likes: column.likes.filter(id => id !== userId) });
 
         return successResponse(set, null);
     }, {
@@ -150,9 +150,9 @@ const columnController = new Elysia({ prefix: "/columns" })
     .post("/:id/dislike", async ({ set, params, auth }) => {
         const userId = await auth.id();
 
-        const column = await ColumnService.get_unmapped(params.id);
+        const column = await ColumnService.getUnmapped(params.id);
         if (column.dislikes.includes(userId)) throw new OperationError("Already disliked", 409);
-        await ColumnService.update_mortal(params.id, { dislikes: [...column.dislikes, userId] });
+        await ColumnService.updateMortal(params.id, { dislikes: [...column.dislikes, userId] });
 
         return successResponse(set, null);
     }, {
@@ -172,9 +172,9 @@ const columnController = new Elysia({ prefix: "/columns" })
     .delete("/:id/dislike", async ({ set, params, auth }) => {
         const userId = await auth.id();
 
-        const column = await ColumnService.get_unmapped(params.id);
+        const column = await ColumnService.getUnmapped(params.id);
         if (!column.dislikes.includes(userId)) throw new OperationError("Not disliked", 409);
-        await ColumnService.update_mortal(params.id, { dislikes: column.dislikes.filter(id => id !== userId) });
+        await ColumnService.updateMortal(params.id, { dislikes: column.dislikes.filter(id => id !== userId) });
 
         return successResponse(set, null);
     }, {
