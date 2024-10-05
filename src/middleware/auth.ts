@@ -9,7 +9,7 @@ export const authMiddleware = new Elysia()
     }))
     .use(errorsDefinition)
     .derive({as: "scoped"}, ({cookie: {auth}, jwt, headers}) => {
-        const token = auth.value || (headers["Authorization"]?.split("Bearer ")[1] ?? "");
+        const token = auth.value || (headers["authorization"]?.split("Bearer ")[1] ?? "");
 
         return {
             auth: {
