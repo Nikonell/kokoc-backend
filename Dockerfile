@@ -1,6 +1,5 @@
 FROM oven/bun:latest AS base
 WORKDIR /app
-VOLUME /app/uploads
 
 RUN apt-get update && apt install curl postgresql-client -y
 
