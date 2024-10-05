@@ -32,8 +32,8 @@ model Column {
   title     String
   summary   String
   content   String
-  likes     Int[]         @default([])
-  dislikes  Int[]         @default([])
+  likes     Int[]          @default([])
+  dislikes  Int[]          @default([])
   comments  Comment[]
 }
 
@@ -45,4 +45,44 @@ model Comment {
   columnId  Int
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
+}
+
+enum TeamRole {
+  goalkeeper
+  defender
+  midfielder
+  forward
+  coach
+}
+
+model TeamMember {
+  id          Int                    @id @default(autoincrement())
+  createdAt   DateTime               @default(now())
+  name        String
+  birthDate   DateTime
+  role        TeamRole
+  avatar      String
+  info        String
+  attachments TeamMemberAttachment[]
+  statistics  TeamMemberStatistics?
+}
+
+model TeamMemberStatistics {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  games_played Int        @default(0)
+  goals        Int        @default(0)
+  assists      Int        @default(0)
+  yellowCards  Int        @default(0)
+  redCards     Int        @default(0)
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  teamMemberId Int        @unique
+}
+
+model TeamMemberAttachment {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  filename     String
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  teamMemberId Int
 }
