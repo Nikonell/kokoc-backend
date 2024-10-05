@@ -2,7 +2,7 @@ import { BunFile } from "bun";
 import { NotFoundError } from "elysia";
 import { mkdir } from "node:fs/promises";
 
-const UPLOADS_PATH = 'uploads';
+const UPLOADS_PATH = '/uploads';
 
 const getFile = async (path: string): Promise<BunFile | null> => {
     const file = Bun.file(path);
