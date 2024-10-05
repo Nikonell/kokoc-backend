@@ -31,7 +31,7 @@ const columnBannerController = new Elysia({ prefix: "/columns/banners" })
         body: t.Object({
             file: t.File({
                 maxSize: "5m",
-                type: ["image/*"]
+                type: ["image/avif", "image/jpeg", "image/png", "image/webp", "image/svg", "image/gif"]
             })
         }),
         response: {

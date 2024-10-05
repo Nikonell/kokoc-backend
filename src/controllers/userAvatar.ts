@@ -24,7 +24,7 @@ const userAvatarController = new Elysia({ prefix: "/users/avatars" })
         body: t.Object({
             file: t.File({
                 maxSize: "2m",
-                type: ["image/*"]
+                type: ["image/avif", "image/jpeg", "image/png", "image/webp", "image/svg", "image/gif"]
             })
         }),
         response: {
