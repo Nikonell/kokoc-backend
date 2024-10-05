@@ -25,14 +25,16 @@ COPY . .
 ENV NODE_ENV=production
 RUN bun test
 
-
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /app/src ./src
 COPY --from=prerelease /app/prisma ./prisma
+COPY --from=prerelease /app/uploads ./uploads
 COPY --from=prerelease /app/package.json .
 COPY startup.sh /app/startup.sh
+
+VOLUME /app/uploads
 
 RUN ["chmod", "+x", "/app/startup.sh"]
 RUN bunx prisma generate
