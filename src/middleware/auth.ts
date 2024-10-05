@@ -8,7 +8,9 @@ export const authMiddleware = new Elysia()
         secret: String(process.env.JWT_SECRET),
     }))
     .use(errorsDefinition)
-    .derive({as: "scoped"}, ({cookie: {auth}, jwt}) => {
+    .derive({as: "scoped"}, ({cookie: {auth}, jwt, headers}) => {
+        const token = auth.value || (headers["Authorization"]?.split("Bearer ")[1] ?? "");
+
         return {
             auth: {
                 async authorize(id: number) {
@@ -24,10 +26,10 @@ export const authMiddleware = new Elysia()
                     });
                 },
                 async loggedIn() {
-                    return !!await jwt.verify(auth.value);
+                    return !!await jwt.verify(token);
                 },
                 async id() {
-                    const session = await jwt.verify(auth.value);
+                    const session = await jwt.verify(token);
                     if (!session) throw new UnauthorizedError();
                     return +session.id;
                 }
