@@ -1,5 +1,5 @@
 import { t } from "elysia";
-import { basicTeamMember, basicTeamMemberAttachment, basicTeamMemberStatistics } from "./basic";
+import { basicTeamMember, basicTeamMemberAttachment, basicTeamMemberHighlight, basicTeamMemberStatistics } from "./basic";
 
 // Member
 export const extendedTeamMember = t.Composite([
@@ -28,3 +28,12 @@ export const extendedTeamMemberAttachment = t.Composite([
     })
 ]);
 export type ExtendedTeamMemberAttachment = typeof extendedTeamMemberAttachment.static;
+
+// Highlight
+export const extendedTeamMemberHighlight = t.Composite([
+    basicTeamMemberHighlight,
+    t.Object({
+        teamMember: basicTeamMember,
+    })
+]);
+export type ExtendedTeamMemberHighlight = typeof extendedTeamMemberHighlight.static;

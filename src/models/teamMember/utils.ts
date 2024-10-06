@@ -1,5 +1,5 @@
 import { t } from "elysia";
-import { basicTeamMember, basicTeamMemberStatistics } from "./basic";
+import { basicTeamMember, basicTeamMemberStatistics, basicTeamMemberHighlight } from "./basic";
 
 // Insert
 export const insertTeamMember = t.Omit(
@@ -17,6 +17,13 @@ export const insertTeamMemberAttachment = t.Object({
 });
 export type InsertTeamMemberAttachment = typeof insertTeamMemberAttachment.static;
 
+export const insertTeamMemberHighlight = t.Object({
+    title: t.String(),
+    videoUrl: t.String(),
+    teamMemberId: t.Number({ minimum: 1 }),
+})
+export type InsertTeamMemberHighlight = typeof insertTeamMemberHighlight.static;
+
 // Update
 export const updateTeamMember = t.Mapped(
     t.KeyOf(t.Omit(basicTeamMember, ["id", "createdAt", "avatar"])),
@@ -29,3 +36,9 @@ export const updateTeamMemberStatistics = t.Mapped(
     K => t.Optional(t.Index(basicTeamMemberStatistics, K))
 );
 export type UpdateTeamMemberStatistics = typeof updateTeamMemberStatistics.static;
+
+export const updateTeamMemberHighlight = t.Mapped(
+    t.KeyOf(t.Omit(basicTeamMemberHighlight, ["id", "createdAt", "teamMemberId"])),
+    K => t.Optional(t.Index(basicTeamMemberHighlight, K))
+);
+export type UpdateTeamMemberHighlight = typeof updateTeamMemberHighlight.static;

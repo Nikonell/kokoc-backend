@@ -1,9 +1,9 @@
 import Elysia, { t } from "elysia";
 import { authMiddleware } from "../middleware/auth";
 import { errorResponseType, successResponse, successResponseType, unauthorizedResponseType } from "../utils/responses";
-import { extendedTeamMember, extendedTeamMemberAttachment, extendedTeamMemberStatistics } from "../models/teamMember/extended";
+import { extendedTeamMember, extendedTeamMemberAttachment, extendedTeamMemberHighlight, extendedTeamMemberStatistics } from "../models/teamMember/extended";
 import { TeamMemberService } from "../services/teamMember";
-import { insertTeamMember, insertTeamMemberAttachment, updateTeamMember, updateTeamMemberStatistics } from "../models/teamMember/utils";
+import { insertTeamMember, insertTeamMemberAttachment, insertTeamMemberHighlight, updateTeamMember, updateTeamMemberHighlight, updateTeamMemberStatistics } from "../models/teamMember/utils";
 import { deleteUpload, getUpload, saveUpload } from "../utils/uploads";
 import { UserService } from "../services/user";
 import { OperationError } from "../utils/errors";
@@ -194,7 +194,7 @@ const teamMemberController = new Elysia({ prefix: "/team/members" })
         await deleteUpload("teamMemberAttachments", attachment.filename);
         await TeamMemberService.deleteAttachment(params.id, userId);
 
-        return successResponse(set, null);
+        return successResponse(set, null, 204);
     }, {
         params: t.Object({
             id: t.Number()
@@ -208,6 +208,82 @@ const teamMemberController = new Elysia({ prefix: "/team/members" })
         detail: {
             summary: "Delete attachment",
             description: "Delete a team member's attachment",
+            tags: ["Team Members"]
+        }
+    })
+    .get("/highlights/:id", async ({ set, params }) => {
+        const highlight = await TeamMemberService.getHighlight(params.id);
+        return successResponse(set, highlight);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            200: successResponseType(extendedTeamMemberHighlight),
+            404: errorResponseType(404, "Team member not found")
+        },
+        detail: {
+            summary: "Get highlight",
+            description: "Get a team member's highlight by id",
+        },
+        tags: ["Team Members"]
+    })
+    .post("/highlights", async ({ set, body, auth }) => {
+        const userId = await auth.id();
+        const highlight = await TeamMemberService.createHighlight(body, userId);
+        return successResponse(set, highlight, 201);
+    }, {
+        body: insertTeamMemberHighlight,
+        response: {
+            201: successResponseType(extendedTeamMemberHighlight),
+            401: unauthorizedResponseType,
+            403: errorResponseType(403, "Only admins can create highlights"),
+            404: errorResponseType(404, "Highlight not found")
+        },
+        detail: {
+            summary: "Create highlight",
+            description: "Create a team member's highlight",
+            tags: ["Team Members"]
+        }
+    })
+    .patch("/highlights/:id", async ({ set, body, params, auth }) => {
+        const userId = await auth.id();
+        const highlight = await TeamMemberService.updateHighlight(params.id, body, userId);
+        return successResponse(set, highlight);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        body: updateTeamMemberHighlight,
+        response: {
+            200: successResponseType(extendedTeamMemberHighlight),
+            401: unauthorizedResponseType,
+            403: errorResponseType(403, "Only admins can update highlights"),
+            404: errorResponseType(404, "Highlight not found")
+        },
+        detail: {
+            summary: "Update highlight",
+            description: "Update a team member's highlight",
+            tags: ["Team Members"]
+        }
+    })
+    .delete("/highlights/:id", async ({ set, params, auth }) => {
+        const userId = await auth.id();
+        await TeamMemberService.deleteHighlight(params.id, userId);
+        return successResponse(set, null, 204);
+    }, {
+        params: t.Object({
+            id: t.Number()
+        }),
+        response: {
+            204: successResponseType(t.Null()),
+            401: unauthorizedResponseType,
+            403: errorResponseType(403, "Only admins can delete highlights"),
+            404: errorResponseType(404, "Highlight not found")
+        },
+        detail: {
+            summary: "Delete highlight",
+            description: "Delete a team member's highlight",
             tags: ["Team Members"]
         }
     });

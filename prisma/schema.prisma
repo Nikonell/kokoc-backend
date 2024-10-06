@@ -64,13 +64,14 @@ model TeamMember {
   info        String
   avatar      String?
   attachments TeamMemberAttachment[]
+  highlights  TeamMemberHighlight[]
   statistics  TeamMemberStatistics?
 }
 
 model TeamMemberStatistics {
   id           Int        @id @default(autoincrement())
   createdAt    DateTime   @default(now())
-  gamesPlayed Int         @default(0)
+  gamesPlayed  Int        @default(0)
   goals        Int        @default(0)
   assists      Int        @default(0)
   yellowCards  Int        @default(0)
@@ -83,6 +84,15 @@ model TeamMemberAttachment {
   id           Int        @id @default(autoincrement())
   createdAt    DateTime   @default(now())
   filename     String
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  teamMemberId Int
+}
+
+model TeamMemberHighlight {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  title        String
+  videoUrl     String
   teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
   teamMemberId Int
 }

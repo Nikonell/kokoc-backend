@@ -38,3 +38,13 @@ export const basicTeamMemberAttachment = t.Object({
     teamMemberId: t.Number({ minimum: 1 }),
 });
 export type BasicTeamMemberAttachment = typeof basicTeamMemberAttachment.static;
+
+// Highlight
+export const basicTeamMemberHighlight = t.Object({
+    id: t.Number(),
+    createdAt: t.Date(),
+    title: t.String(),
+    videoUrl: t.String(),
+    teamMemberId: t.Number({ minimum: 1 }),
+});
+export type BasicTeamMemberHighlight = typeof basicTeamMemberHighlight.static;

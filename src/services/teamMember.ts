@@ -1,7 +1,7 @@
 import { NotFoundError } from "elysia";
-import { ExtendedTeamMember, ExtendedTeamMemberAttachment, ExtendedTeamMemberStatistics } from "../models/teamMember/extended";
+import { ExtendedTeamMember, ExtendedTeamMemberAttachment, ExtendedTeamMemberHighlight, ExtendedTeamMemberStatistics } from "../models/teamMember/extended";
 import prisma from "../utils/prisma";
-import { InsertTeamMember, UpdateTeamMember, UpdateTeamMemberStatistics } from "../models/teamMember/utils";
+import { InsertTeamMember, InsertTeamMemberHighlight, UpdateTeamMember, UpdateTeamMemberHighlight, UpdateTeamMemberStatistics } from "../models/teamMember/utils";
 import { UserService } from "./user";
 import { OperationError } from "../utils/errors";
 
@@ -118,5 +118,54 @@ export abstract class TeamMemberService {
         if (!user.isAdmin) throw new OperationError("Only admins can delete attachments", 403);
 
         await prisma.teamMemberAttachment.delete({ where: { id } });
+    }
+
+    static async getHighlight(id: number): Promise<ExtendedTeamMemberHighlight> {
+        const highlight = await prisma.teamMemberHighlight.findUnique({
+            where: { id },
+            include: { teamMember: true }
+        });
+
+        if (!highlight) throw new NotFoundError("Highlight not found");
+        return highlight;
+    }
+
+    static async createHighlight(highlight: InsertTeamMemberHighlight, userId: number): Promise<ExtendedTeamMemberHighlight> {
+        const user = await UserService.getSlim(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can create highlights", 403);
+
+        const teamMember = await this.get(highlight.teamMemberId);
+
+        const newHighlight = await prisma.teamMemberHighlight.create({
+            data: {
+                ...highlight,
+                teamMemberId: teamMember.id
+            },
+            include: { teamMember: true }
+        });
+
+        return newHighlight;
+    }
+
+    static async updateHighlight(id: number, highlight: UpdateTeamMemberHighlight, userId: number): Promise<ExtendedTeamMemberHighlight> {
+        const user = await UserService.getSlim(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can update highlights", 403);
+
+        const updatedHighlight = await prisma.teamMemberHighlight.update({
+            where: { id },
+            data: highlight,
+            include: { teamMember: true }
+        });
+
+        return updatedHighlight;
+    }
+
+    static async deleteHighlight(id: number, userId: number): Promise<void> {
+        const user = await UserService.getSlim(userId);
+        if (!user.isAdmin) throw new OperationError("Only admins can delete highlights", 403);
+
+        await this.getHighlight(id);
+
+        await prisma.teamMemberHighlight.delete({ where: { id } });
     }
 }
