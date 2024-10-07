@@ -13,7 +13,6 @@ export const basicTeamMember = t.Object({
     birthDate: t.Date(),
     role: teamRole,
     info: t.String(),
-    avatar: t.Nullable(t.String()),
 });
 export type BasicTeamMember = typeof basicTeamMember.static;
 

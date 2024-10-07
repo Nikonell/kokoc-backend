@@ -4,6 +4,7 @@ import prisma from "../utils/prisma";
 import { InsertTeamMember, InsertTeamMemberHighlight, UpdateTeamMember, UpdateTeamMemberHighlight, UpdateTeamMemberStatistics } from "../models/teamMember/utils";
 import { UserService } from "./user";
 import { OperationError } from "../utils/errors";
+import { uploadExists } from "../utils/uploads";
 
 export abstract class TeamMemberService {
     static async get(id: number): Promise<ExtendedTeamMember> {
@@ -18,16 +19,29 @@ export abstract class TeamMemberService {
         });
 
         if (!teamMember) throw new NotFoundError("Team member not found");
+
+        teamMember["avatar"] = await uploadExists("teamMemberAvatars", `${teamMember.id}`)
+            ? `/api/team/members/avatars/${teamMember.id}`
+            : null;
+
         return teamMember;
     }
 
     static async getAll(): Promise<ExtendedTeamMember[]> {
-        return await prisma.teamMember.findMany({
+        const teamMembers = await prisma.teamMember.findMany({
             include: {
                 attachments: true,
                 statistics: true
             }
         });
+
+        for (const teamMember of teamMembers) {
+            teamMember["avatar"] = await uploadExists("teamMemberAvatars", `${teamMember.id}`)
+                ? `/api/team/members/avatars/${teamMember.id}`
+                : null;
+        }
+
+        return teamMembers;
     }
 
     static async create(member: InsertTeamMember, userId: number): Promise<ExtendedTeamMember> {

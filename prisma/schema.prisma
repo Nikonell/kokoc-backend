@@ -62,7 +62,6 @@ model TeamMember {
   birthDate   DateTime
   role        TeamRole
   info        String
-  avatar      String?
   attachments TeamMemberAttachment[]
   highlights  TeamMemberHighlight[]
   statistics  TeamMemberStatistics?

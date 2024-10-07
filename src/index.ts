@@ -12,6 +12,7 @@ import commentController from "./controllers/comment";
 import userAvatarController from "./controllers/userAvatar";
 import columnBannerController from "./controllers/columnBanner";
 import teamMemberController from "./controllers/teamMember";
+import teamMemberAvatarController from "./controllers/teamMemberAvatar";
 
 const logger = Logestic.preset("fancy");
 
@@ -65,6 +66,7 @@ new Elysia({ prefix: "/api", precompile: true })
     .use(authController)
     .use(userController)
     .use(teamMemberController)
+    .use(teamMemberAvatarController)
     .get("/healthcheck", async () => {
         await prisma.$executeRaw`SELECT PG_SLEEP(0);`;
         return { status: "success" };

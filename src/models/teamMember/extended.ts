@@ -5,6 +5,7 @@ import { basicTeamMember, basicTeamMemberAttachment, basicTeamMemberHighlight, b
 export const extendedTeamMember = t.Composite([
     basicTeamMember,
     t.Object({
+        avatar: t.Nullable(t.String()),
         statistics: t.Nullable(basicTeamMemberStatistics),
         attachments: t.Array(basicTeamMemberAttachment),
     })
