@@ -1,5 +1,6 @@
 import { t } from "elysia";
 import { basicTeamMember, basicTeamMemberAttachment, basicTeamMemberHighlight, basicTeamMemberStatistics } from "./basic";
+import { basicMatch } from "../match/basic";
 
 // Member
 export const extendedTeamMember = t.Composite([
@@ -8,6 +9,7 @@ export const extendedTeamMember = t.Composite([
         avatar: t.Nullable(t.String()),
         statistics: t.Nullable(basicTeamMemberStatistics),
         attachments: t.Array(basicTeamMemberAttachment),
+        matches: t.Array(basicMatch),
     })
 ]);
 export type ExtendedTeamMember = typeof extendedTeamMember.static;

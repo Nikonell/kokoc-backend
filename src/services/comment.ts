@@ -13,7 +13,8 @@ export abstract class CommentService {
             },
             include: {
                 author: true,
-                column: true
+                column: true,
+                match: true
             }
         });
 
@@ -31,15 +32,15 @@ export abstract class CommentService {
         if (!comment) throw new NotFoundError("Comment not found");
         return comment;
     }
-
     static async getFiltered(filters: CommentFilters): Promise<SelectComment[]> {
-        const { columnId, authorId, page, limit } = filters;
+        const { columnId, authorId, matchId, page, limit } = filters;
 
         const comments = await prisma.comment.findMany({
             where: {
                 AND: [
-                    { columnId },
-                    { authorId }
+                    columnId ? { columnId } : {},
+                    authorId ? { authorId } : {},
+                    matchId ? { matchId } : {}
                 ]
             },
             skip: page * limit,
@@ -47,7 +48,8 @@ export abstract class CommentService {
             orderBy: { createdAt: "desc" },
             include: {
                 author: true,
-                column: true
+                column: true,
+                match: true
             }
         });
 
@@ -55,13 +57,14 @@ export abstract class CommentService {
     }
 
     static async countFiltered(filters: CommentFilters): Promise<number> {
-        const { columnId, authorId } = filters;
+        const { columnId, authorId, matchId } = filters;
 
         return await prisma.comment.count({
             where: {
                 AND: [
-                    { columnId },
-                    { authorId }
+                    columnId ? { columnId } : {},
+                    authorId ? { authorId } : {},
+                    matchId ? { matchId } : {}
                 ]
             },
         });
@@ -72,7 +75,8 @@ export abstract class CommentService {
             data: {...comment, authorId},
             include: {
                 author: true,
-                column: true
+                column: true,
+                match: true
             }
         });
 

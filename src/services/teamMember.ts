@@ -14,34 +14,37 @@ export abstract class TeamMemberService {
             },
             include: {
                 attachments: true,
-                statistics: true
+                statistics: true,
+                matches: true,
             }
         });
 
         if (!teamMember) throw new NotFoundError("Team member not found");
 
-        teamMember["avatar"] = await uploadExists("teamMemberAvatars", `${teamMember.id}`)
+        const avatar = await uploadExists("teamMemberAvatars", `${teamMember.id}`)
             ? `/api/team/members/avatars/${teamMember.id}`
             : null;
 
-        return teamMember;
+        return { ...teamMember, avatar };
     }
 
     static async getAll(): Promise<ExtendedTeamMember[]> {
         const teamMembers = await prisma.teamMember.findMany({
             include: {
                 attachments: true,
-                statistics: true
+                statistics: true,
+                matches: true,
             }
         });
 
-        for (const teamMember of teamMembers) {
-            teamMember["avatar"] = await uploadExists("teamMemberAvatars", `${teamMember.id}`)
+        const extendedTeamMembers = await Promise.all(teamMembers.map(async (teamMember) => {
+            const avatar = await uploadExists("teamMemberAvatars", `${teamMember.id}`)
                 ? `/api/team/members/avatars/${teamMember.id}`
                 : null;
-        }
+            return { ...teamMember, avatar };
+        }));
 
-        return teamMembers;
+        return extendedTeamMembers;
     }
 
     static async create(member: InsertTeamMember, userId: number): Promise<ExtendedTeamMember> {

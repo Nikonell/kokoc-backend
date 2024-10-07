@@ -14,6 +14,8 @@ import columnBannerController from "./controllers/columnBanner";
 import teamMemberController from "./controllers/teamMember";
 import teamMemberAvatarController from "./controllers/teamMemberAvatar";
 import teamStatisticsController from "./controllers/teamStatistics";
+import matchController from "./controllers/match";
+import secondTeamCompositionController from "./controllers/secondTeamComposition";
 
 const logger = Logestic.preset("fancy");
 
@@ -32,6 +34,8 @@ const scalar = swagger({
             {name: "Comments", description: "Comment routes"},
             {name: "Team Members", description: "Team member routes"},
             {name: "Team Statistics", description: "Team statistics routes"},
+            {name: "Matches", description: "Match routes"},
+            {name: "Second Team Compositions", description: "Second team composition routes"},
         ]
     },
     scalarConfig: {
@@ -70,6 +74,8 @@ new Elysia({ prefix: "/api", precompile: true })
     .use(teamMemberController)
     .use(teamMemberAvatarController)
     .use(teamStatisticsController)
+    .use(matchController)
+    .use(secondTeamCompositionController)
     .get("/healthcheck", async () => {
         await prisma.$executeRaw`SELECT PG_SLEEP(0);`;
         return { status: "success" };

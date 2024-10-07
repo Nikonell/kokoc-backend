@@ -41,8 +41,10 @@ model Comment {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   content   String
-  column    Column   @relation(fields: [columnId], references: [id])
-  columnId  Int
+  column    Column?  @relation(fields: [columnId], references: [id])
+  columnId  Int?
+  match     Match?   @relation(fields: [matchId], references: [id])
+  matchId   Int?
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
 }
@@ -65,6 +67,7 @@ model TeamMember {
   attachments TeamMemberAttachment[]
   highlights  TeamMemberHighlight[]
   statistics  TeamMemberStatistics?
+  matches     Match[]                @relation("KokocMatchComposition")
 }
 
 model TeamMemberStatistics {
@@ -111,4 +114,40 @@ model TeamStatistics {
   yellowCards    Int
   redCards       Int
   cleanSheets    Int
+}
+
+model Match {
+  id                      Int                     @id @default(autoincrement())
+  createdAt               DateTime                @default(now())
+  matchName               String
+  dateTime                DateTime
+  videoUrl                String
+  secondTeamName          String
+  kokocGoalsScored        Int
+  kokocGoalsConceded      Int
+  secondTeamGoalsScored   Int
+  secondTeamGoalsConceded Int
+  kokocYellowCards        Int
+  kokocRedCards           Int
+  secondTeamYellowCards   Int
+  secondTeamRedCards      Int
+  result                  MatchResult
+  kokocComposition        TeamMember[]            @relation("KokocMatchComposition")
+  secondTeamComposition   SecondTeamComposition[]
+  comments                Comment[]
+}
+
+model SecondTeamComposition {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  name      String
+  role      TeamRole
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  matchId   Int
+}
+
+enum MatchResult {
+  win
+  loss
+  draw
 }
