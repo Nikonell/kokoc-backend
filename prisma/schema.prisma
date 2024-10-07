@@ -95,3 +95,20 @@ model TeamMemberHighlight {
   teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
   teamMemberId Int
 }
+
+model TeamStatistics {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  gamesPlayed    Int
+  wins           Int
+  winsOvertime   Int
+  winsPenalty    Int
+  lossesPenalty  Int
+  lossesOvertime Int
+  losses         Int
+  goalsScored    Int
+  goalsConceded  Int
+  yellowCards    Int
+  redCards       Int
+  cleanSheets    Int
+}
