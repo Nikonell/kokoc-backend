@@ -8,7 +8,7 @@ import { OperationError } from "../utils/errors";
 const teamMemberAvatarController = new Elysia({ prefix: "/team/members/avatars" })
     .use(authMiddleware)
     .get("/:id", async ({ params }) => {
-        return await getUpload("teamMemberAvatars", `${params.id}`);
+        return await getUpload("teamMemberAvatars", `${params.id}`, "default.jpg");
     }, {
         params: t.Object({ id: t.Number() }),
         response: { 404: errorResponseType(404, "File not found") },
