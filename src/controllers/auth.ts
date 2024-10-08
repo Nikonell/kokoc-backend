@@ -10,7 +10,7 @@ const authController = new Elysia({ prefix: "/auth" })
         const id = await AuthService.loginByCredentials(body);
         await auth.authorize(id);
 
-        return successResponse(set, null);
+        return successResponse(set, null, 204);
     }, {
         body: loginUserRequest,
         response: {
@@ -27,11 +27,11 @@ const authController = new Elysia({ prefix: "/auth" })
         const id = await AuthService.register(body);
         await auth.authorize(id);
 
-        return successResponse(set, null);
+        return successResponse(set, null, 204);
     }, {
         body: registerUserRequest,
         response: {
-            200: successResponseType(authResponse),
+            204: successResponseType(authResponse),
             409: errorResponseType(409, "User with this email already exists"),
         },
         detail: {

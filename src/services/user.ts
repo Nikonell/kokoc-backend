@@ -2,6 +2,7 @@ import { NotFoundError } from "elysia";
 import prisma from "../utils/prisma";
 import { BasicUser } from "../models/user/basic";
 import { SelectUser } from "../models/user/extended";
+import { CartService } from "./cart";
 
 export abstract class UserService {
     static async get(id: number): Promise<SelectUser> {
@@ -10,12 +11,15 @@ export abstract class UserService {
                 id
             },
             include: {
-                comments: true,
+                comments: true
             }
         });
 
         if (!user) throw new NotFoundError("User not found");
-        return user;
+
+        const cart = await CartService.get(id);
+
+        return {...user, cart};
     }
 
     static async getSlim(id: number): Promise<BasicUser> {
