@@ -6,11 +6,11 @@ import { authResponse, loginUserRequest, registerUserRequest } from "../models/a
 
 const authController = new Elysia({ prefix: "/auth" })
     .use(authMiddleware)
-    .post("/login", async ({set, body, auth}) => {
+    .post("/login", async ({ set, body, auth }) => {
         const id = await AuthService.loginByCredentials(body);
-        await auth.authorize(id);
+        const token = await auth.authorize(id);
 
-        return successResponse(set, null, 204);
+        return successResponse(set, {token}, 204);
     }, {
         body: loginUserRequest,
         response: {
@@ -25,9 +25,9 @@ const authController = new Elysia({ prefix: "/auth" })
     })
     .post("/register", async ({ set, body, auth }) => {
         const id = await AuthService.register(body);
-        await auth.authorize(id);
+        const token = await auth.authorize(id);
 
-        return successResponse(set, null, 204);
+        return successResponse(set, {token}, 204);
     }, {
         body: registerUserRequest,
         response: {
@@ -37,20 +37,6 @@ const authController = new Elysia({ prefix: "/auth" })
         detail: {
             summary: "Register",
             description: "Register new user",
-            tags: ["Auth"]
-        }
-    })
-    .get("/logout", async ({ set, auth }) => {
-        await auth.logout();
-
-        return successResponse(set, null);
-    }, {
-        response: {
-            200: successResponseType(authResponse)
-        },
-        detail: {
-            summary: "Logout",
-            description: "Logout current user",
             tags: ["Auth"]
         }
     });

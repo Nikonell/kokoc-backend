@@ -8,26 +8,13 @@ export const authMiddleware = new Elysia()
         secret: String(process.env.JWT_SECRET),
     }))
     .use(errorsDefinition)
-    .derive({as: "scoped"}, ({cookie: {auth}, jwt, headers}) => {
-        const token = auth.value || (headers["authorization"]?.split("Bearer ")[1] ?? "");
+    .derive({as: "scoped"}, ({jwt, headers}) => {
+        const token = headers["authorization"]?.split("Bearer ")[1] ?? "";
 
         return {
             auth: {
-                async authorize(id: number) {
-                    auth.set({
-                        value: await jwt.sign({id}),
-                        maxAge: 60 * 60 * 24 * 30,
-                        httpOnly: false,
-                        sameSite: "none"
-                    });
-                },
-                async logout() {
-                    auth.set({
-                        value: "",
-                        maxAge: 0,
-                        httpOnly: false,
-                        sameSite: "none"
-                    });
+                async authorize(id: number): Promise<string> {
+                    return await jwt.sign({ id });
                 },
                 async loggedIn() {
                     return !!await jwt.verify(token);

@@ -14,5 +14,7 @@ export const registerUserRequest = t.Object({
 });
 export type RegisterUserRequest = typeof registerUserRequest.static;
 
-export const authResponse = t.Null();
+export const authResponse = t.Object({
+    token: t.String()
+});
 export type AuthResponse = typeof authResponse.static;
