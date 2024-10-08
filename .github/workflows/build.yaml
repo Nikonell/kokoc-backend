@@ -40,8 +40,8 @@ jobs:
           script_stop: true
           script: |
             cd ~/footclub/
-            sudo docker compose pull
-            sudo docker compose up -d
-            sudo docker container prune -f
-            sudo docker image prune -f
+            docker compose pull
+            docker compose up -d
+            docker container prune -f
+            docker image prune -f
       - run: echo "🎉 Finish deploy"
