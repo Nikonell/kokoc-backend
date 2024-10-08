@@ -17,12 +17,14 @@ export const authMiddleware = new Elysia()
                     auth.set({
                         value: await jwt.sign({id}),
                         maxAge: 60 * 60 * 24 * 30,
+                        httpOnly: false
                     });
                 },
                 async logout() {
                     auth.set({
                         value: "",
                         maxAge: 0,
+                        httpOnly: false
                     });
                 },
                 async loggedIn() {
