@@ -6,7 +6,7 @@ import { UserService } from "./user";
 import { OperationError } from "../utils/errors";
 
 export abstract class MatchService {
-    static async get(id: number): Promise<ExtendedMatch> {
+    static async get(id: number, userId?: number): Promise<ExtendedMatch> {
         const match = await prisma.match.findUnique({
             where: { id },
             include: {
@@ -17,8 +17,20 @@ export abstract class MatchService {
         });
 
         if (!match) throw new NotFoundError("Match not found");
+
+        if (userId) {
+            const user = await UserService.getSlim(userId);
+            if (!user.viewedMatches.includes(match.id)) {
+                await prisma.user.update({
+                    where: { id: userId },
+                    data: { viewedMatches: { push: match.id } }
+                });
+            }
+        }
+
         return match;
     }
+
     static async getFiltered(filters: MatchFilters): Promise<ExtendedMatch[]> {
         const { page, limit, startDate, endDate, result, name } = filters;
 
@@ -50,6 +62,7 @@ export abstract class MatchService {
 
         return matches;
     }
+
     static async countFiltered(filters: MatchFilters): Promise<number> {
         const { startDate, endDate, result, name } = filters;
 

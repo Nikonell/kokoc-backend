@@ -3,6 +3,7 @@ import prisma from "../utils/prisma";
 import { BasicUser } from "../models/user/basic";
 import { SelectUser } from "../models/user/extended";
 import { CartService } from "./cart";
+import { MatchService } from "./match";
 
 export abstract class UserService {
     static async get(id: number): Promise<SelectUser> {
@@ -19,7 +20,9 @@ export abstract class UserService {
 
         const cart = await CartService.get(id);
 
-        return {...user, cart};
+        const viewedMatches = await Promise.all(user.viewedMatches.map(MatchService.get));
+
+        return {...user, cart, viewedMatches};
     }
 
     static async getSlim(id: number): Promise<BasicUser> {

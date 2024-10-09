@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["omitApi"]
 }
 
@@ -9,15 +9,16 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  createdAt    DateTime  @default(now())
-  isAdmin      Boolean   @default(false)
-  email        String    @unique
-  firstName    String
-  lastName     String
-  passwordHash String
-  comments     Comment[]
-  cart         Cart?
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  isAdmin       Boolean   @default(false)
+  email         String    @unique
+  firstName     String
+  lastName      String
+  passwordHash  String
+  viewedMatches Int[]     @default([])
+  comments      Comment[]
+  cart          Cart?
 }
 
 enum ColumnCategory {
@@ -155,8 +156,8 @@ enum MatchResult {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id        Int              @id @default(autoincrement())
+  createdAt DateTime         @default(now())
   name      String
   price     Float
   discount  Float
@@ -164,17 +165,18 @@ model Product {
 }
 
 model Cart {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int       @unique
+  id        Int              @id @default(autoincrement())
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    Int              @unique
   products  ProductsOnCart[]
 }
 
 model ProductsOnCart {
-  cart    Cart     @relation(fields: [cartId], references: [id])
-  cartId  Int
-  product Product  @relation(fields: [productId], references: [id])
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    Int
+  product   Product @relation(fields: [productId], references: [id])
   productId Int
+
   @@id([cartId, productId])
 }
