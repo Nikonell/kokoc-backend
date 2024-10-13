@@ -32,12 +32,10 @@ export abstract class MatchService {
     }
 
     static async getFiltered(filters: MatchFilters): Promise<ExtendedMatch[]> {
-        const { page, limit, startDate, endDate, result, name } = filters;
+        const { page, limit, result, name } = filters;
 
         const whereClause = {
             AND: [
-                startDate ? { dateTime: { gte: startDate } } : {},
-                endDate ? { dateTime: { lte: endDate } } : {},
                 result?.length ? { result: { in: result } } : {},
                 name ? {
                     OR: [
@@ -64,12 +62,10 @@ export abstract class MatchService {
     }
 
     static async countFiltered(filters: MatchFilters): Promise<number> {
-        const { startDate, endDate, result, name } = filters;
+        const { result, name } = filters;
 
         const whereClause = {
             AND: [
-                startDate ? { dateTime: { gte: startDate } } : {},
-                endDate ? { dateTime: { lte: endDate } } : {},
                 result?.length ? { result: { in: result } } : {},
                 name ? {
                     OR: [
