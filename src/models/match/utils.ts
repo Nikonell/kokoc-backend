@@ -12,8 +12,8 @@ export type UpdateMatch = typeof updateMatch.static;
 export const matchFilters = t.Object({
     page: t.Number({default: 0}),
     limit: t.Number({default: 10}),
-    startDate: t.Optional(t.Date()),
-    endDate: t.Optional(t.Date()),
+    startDate: t.Nullable(t.Date()),
+    endDate: t.Nullable(t.Date()),
     result: t.Optional(t.Array(matchResult)),
     name: t.Optional(t.String()),
 });
